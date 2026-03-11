@@ -15,15 +15,11 @@ text-align:center;
 
 .box{
 background:#3b3b3b;
-width:400px;
+width:420px;
 margin:auto;
 margin-top:30px;
 padding:20px;
 border-radius:10px;
-}
-
-h2{
-color:#ff4444;
 }
 
 input{
@@ -53,6 +49,7 @@ background:#222;
 padding:10px;
 margin-top:10px;
 border-radius:5px;
+text-align:left;
 }
 
 .send{
@@ -90,7 +87,7 @@ border-radius:5px;
 
 </div>
 
-<h3>รายการที่เลือก</h3>
+<h3>รายการ</h3>
 
 <div id="list" class="order"></div>
 
@@ -102,21 +99,47 @@ border-radius:5px;
 
 const WEBHOOK = "ใส่ webhook ตรงนี้"
 
-let order = []
+let order = {}
 
 function add(menu){
 
-order.push(menu)
+if(order[menu]){
+order[menu]++
+}else{
+order[menu]=1
+}
 
-document.getElementById("list").innerText = order.join(", ")
+show()
+
+}
+
+function show(){
+
+let text=""
+
+for(let m in order){
+
+text += m + " x" + order[m] + "\n"
+
+}
+
+document.getElementById("list").innerText=text
 
 }
 
 async function sendOrder(){
 
-const staff = document.getElementById("staff").value
-const name = document.getElementById("name").value
-const table = document.getElementById("table").value
+const staff=document.getElementById("staff").value
+const name=document.getElementById("name").value
+const table=document.getElementById("table").value
+
+let text=""
+
+for(let m in order){
+
+text += m + " x" + order[m] + "\n"
+
+}
 
 await fetch(WEBHOOK,{
 method:"POST",
@@ -129,12 +152,13 @@ content:
 👨‍🍳 ${staff}
 👤 ${name}
 🪑 ${table}
-🍽 ${order.join(", ")}`
+
+${text}`
 })
 })
 
-order=[]
-document.getElementById("list").innerText=""
+order={}
+show()
 
 alert("ส่งแล้ว")
 
