@@ -7,47 +7,62 @@
 <style>
 
 body{
-    background:#2b2b2b;
-    font-family:Arial;
-    color:white;
-    text-align:center;
+background:#2b2b2b;
+font-family:Arial;
+color:white;
+text-align:center;
 }
 
 .box{
-    background:#3b3b3b;
-    width:350px;
-    margin:auto;
-    margin-top:50px;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 0 10px black;
+background:#3b3b3b;
+width:400px;
+margin:auto;
+margin-top:30px;
+padding:20px;
+border-radius:10px;
 }
 
 h2{
-    color:#ff4d4d;
+color:#ff4444;
 }
 
-input,select{
-    width:90%;
-    padding:8px;
-    margin:5px;
-    border-radius:5px;
-    border:none;
+input{
+width:90%;
+padding:8px;
+margin:5px;
+border-radius:5px;
+border:none;
 }
 
-button{
-    background:#b30000;
-    color:white;
-    padding:10px;
-    width:95%;
-    border:none;
-    border-radius:5px;
-    margin-top:10px;
-    cursor:pointer;
+.menu button{
+margin:5px;
+padding:10px;
+background:#b30000;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
 }
 
-button:hover{
-    background:red;
+.menu button:hover{
+background:red;
+}
+
+.order{
+background:#222;
+padding:10px;
+margin-top:10px;
+border-radius:5px;
+}
+
+.send{
+margin-top:10px;
+padding:10px;
+width:95%;
+background:green;
+color:white;
+border:none;
+border-radius:5px;
 }
 
 </style>
@@ -60,20 +75,26 @@ button:hover{
 <h2>Redbrick Coffee Shop</h2>
 
 <input id="staff" placeholder="พนักงาน">
-
 <input id="name" placeholder="ลูกค้า">
-
 <input id="table" placeholder="โต๊ะ">
 
-<select id="menu">
-<option>Coffee</option>
-<option>Latte</option>
-<option>Steak</option>
-<option>Pasta</option>
-<option>Cake</option>
-</select>
+<h3>เมนู</h3>
 
-<button onclick="sendOrder()">ส่งออเดอร์</button>
+<div class="menu">
+
+<button onclick="add('Coffee')">Coffee</button>
+<button onclick="add('Latte')">Latte</button>
+<button onclick="add('Cake')">Cake</button>
+<button onclick="add('Pasta')">Pasta</button>
+<button onclick="add('Steak')">Steak</button>
+
+</div>
+
+<h3>รายการที่เลือก</h3>
+
+<div id="list" class="order"></div>
+
+<button class="send" onclick="sendOrder()">ส่งออเดอร์</button>
 
 </div>
 
@@ -81,11 +102,20 @@ button:hover{
 
 const WEBHOOK = "ใส่ webhook ตรงนี้"
 
+let order = []
+
+function add(menu){
+
+order.push(menu)
+
+document.getElementById("list").innerText = order.join(", ")
+
+}
+
 async function sendOrder(){
 
 const staff = document.getElementById("staff").value
 const name = document.getElementById("name").value
-const menu = document.getElementById("menu").value
 const table = document.getElementById("table").value
 
 await fetch(WEBHOOK,{
@@ -98,10 +128,13 @@ content:
 `📦 ORDER
 👨‍🍳 ${staff}
 👤 ${name}
-🍽 ${menu}
-🪑 ${table}`
+🪑 ${table}
+🍽 ${order.join(", ")}`
 })
 })
+
+order=[]
+document.getElementById("list").innerText=""
 
 alert("ส่งแล้ว")
 
