@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick Order Panel</title>
+<title>Redbrick System</title>
 
 <style>
 
@@ -17,9 +17,42 @@ text-align:center;
 background:#3b3b3b;
 width:420px;
 margin:auto;
-margin-top:30px;
+margin-top:40px;
 padding:20px;
 border-radius:10px;
+}
+
+button{
+padding:10px;
+margin:5px;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+.menu button{
+background:#b30000;
+color:white;
+}
+
+.send{
+background:green;
+color:white;
+width:90%;
+}
+
+.login button{
+background:#444;
+color:white;
+width:90%;
+}
+
+.order{
+background:#222;
+padding:10px;
+margin-top:10px;
+text-align:left;
+white-space:pre-line;
 }
 
 input{
@@ -30,48 +63,41 @@ border-radius:5px;
 border:none;
 }
 
-.menu button{
-margin:5px;
-padding:10px;
-background:#b30000;
-color:white;
-border:none;
-border-radius:5px;
-cursor:pointer;
-}
-
-.menu button:hover{
-background:red;
-}
-
-.order{
-background:#222;
-padding:10px;
-margin-top:10px;
-border-radius:5px;
-text-align:left;
-}
-
-.send{
-margin-top:10px;
-padding:10px;
-width:95%;
-background:green;
-color:white;
-border:none;
-border-radius:5px;
-}
-
 </style>
 
 </head>
 <body>
 
-<div class="box">
+
+<!-- LOGIN PAGE -->
+
+<div id="login" class="box">
 
 <h2>Redbrick Coffee Shop</h2>
 
-<input id="staff" placeholder="พนักงาน">
+<h3>เลือกพนักงาน</h3>
+
+<div class="login">
+
+<button onclick="login('Arthur')">Arthur</button>
+<button onclick="login('Olivia')">Olivia</button>
+<button onclick="login('Lucas')">Lucas</button>
+<button onclick="login('Emma')">Emma</button>
+
+</div>
+
+</div>
+
+
+
+<!-- ORDER PAGE -->
+
+<div id="orderPage" class="box" style="display:none;">
+
+<h2>Redbrick Order Panel</h2>
+
+<p id="staffName"></p>
+
 <input id="name" placeholder="ลูกค้า">
 <input id="table" placeholder="โต๊ะ">
 
@@ -95,11 +121,27 @@ border-radius:5px;
 
 </div>
 
+
+
 <script>
 
 const WEBHOOK = "ใส่ webhook ตรงนี้"
 
-let order = {}
+let staff=""
+let order={}
+
+
+function login(name){
+
+staff=name
+
+document.getElementById("login").style.display="none"
+document.getElementById("orderPage").style.display="block"
+
+document.getElementById("staffName").innerText="พนักงาน: "+staff
+
+}
+
 
 function add(menu){
 
@@ -112,6 +154,7 @@ order[menu]=1
 show()
 
 }
+
 
 function show(){
 
@@ -127,9 +170,9 @@ document.getElementById("list").innerText=text
 
 }
 
+
 async function sendOrder(){
 
-const staff=document.getElementById("staff").value
 const name=document.getElementById("name").value
 const table=document.getElementById("table").value
 
