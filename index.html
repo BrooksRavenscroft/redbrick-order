@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Redbrick Order</title>
+</head>
+<body>
+
+<h2>Redbrick Order Panel</h2>
+
+<input id="name" placeholder="Customer">
+<br><br>
+
+<input id="menu" placeholder="Menu">
+<br><br>
+
+<input id="table" placeholder="Table">
+<br><br>
+
+<button onclick="sendOrder()">Send Order</button>
+
+<script>
+
+const WEBHOOK = "ใส่ webhook ตรงนี้"
+
+async function sendOrder(){
+
+  const name = document.getElementById("name").value
+  const menu = document.getElementById("menu").value
+  const table = document.getElementById("table").value
+
+  await fetch(WEBHOOK,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      content:
+`📦 ORDER
+👤 ${name}
+🍽 ${menu}
+🪑 ${table}`
+    })
+  })
+
+  alert("sent")
+
+}
+
+</script>
+
+</body>
+</html>
