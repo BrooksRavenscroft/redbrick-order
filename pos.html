@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick Cafe System</title>
+<title>Redbrick Cafe</title>
 
 <style>
 
@@ -10,16 +10,16 @@ body{
 
 margin:0;
 font-family:Segoe UI;
-background:#141414;
-color:white;
+background:#2b1d14;
+color:#fff3e6;
 
 }
 
-/* TOP BAR */
+/* TOP */
 
 .top{
 
-background:#0d0d0d;
+background:#3b261a;
 
 padding:10px;
 
@@ -29,23 +29,21 @@ justify-content:space-between;
 
 align-items:center;
 
-border-bottom:2px solid #b30000;
-
 }
 
 .menu button{
 
-background:#222;
+background:#5a3a29;
 
 color:white;
 
 border:none;
 
-padding:8px 14px;
+padding:8px 12px;
 
-margin-right:5px;
+margin:2px;
 
-font-size:14px;
+border-radius:6px;
 
 cursor:pointer;
 
@@ -53,25 +51,23 @@ cursor:pointer;
 
 .menu button:hover{
 
-background:#b30000;
+background:#8b5a3c;
 
 }
 
 .staff{
 
-color:#00ffaa;
-
-font-weight:bold;
+color:#ffd699;
 
 }
 
-/* PAGE */
+/* page */
 
 .page{
 
 display:none;
 
-padding:20px;
+padding:15px;
 
 }
 
@@ -81,39 +77,39 @@ display:block;
 
 }
 
-/* DASHBOARD */
+/* card */
 
 .card{
 
-background:#1f1f1f;
+background:#4a2f21;
 
-border:1px solid #333;
+padding:15px;
 
 border-radius:10px;
 
-padding:20px;
-
-width:220px;
+width:200px;
 
 display:inline-block;
 
 margin:10px;
 
+text-align:center;
+
 }
 
 .big{
 
-font-size:30px;
+font-size:28px;
 
-color:#00ffaa;
+color:#ffcc99;
 
 }
 
 /* POS */
 
-.posBox{
+.box{
 
-background:#1c1c1c;
+background:#3b261a;
 
 padding:15px;
 
@@ -125,8 +121,6 @@ margin:auto;
 
 }
 
-/* MENU BUTTON */
-
 .menuGrid{
 
 display:grid;
@@ -135,21 +129,51 @@ grid-template-columns:repeat(3,1fr);
 
 gap:10px;
 
-margin-top:10px;
-
 }
 
 .menuGrid button{
 
 height:70px;
 
-font-size:16px;
-
-background:#2b2b2b;
+background:#6b442d;
 
 color:white;
 
 border:none;
+
+border-radius:10px;
+
+font-size:16px;
+
+}
+
+.menuGrid button:hover{
+
+background:#a66b47;
+
+}
+
+.order{
+
+background:#1a120c;
+
+padding:10px;
+
+margin-top:10px;
+
+}
+
+.bigBtn{
+
+background:#cc7a00;
+
+border:none;
+
+padding:10px;
+
+margin-top:5px;
+
+color:white;
 
 border-radius:8px;
 
@@ -157,35 +181,7 @@ cursor:pointer;
 
 }
 
-.menuGrid button:hover{
-
-background:#b30000;
-
-}
-
-/* ORDER */
-
-.orderBox{
-
-background:#111;
-
-padding:10px;
-
-margin-top:10px;
-
-min-height:80px;
-
-}
-
-.total{
-
-font-size:20px;
-
-margin-top:5px;
-
-}
-
-/* RECEIPT */
+/* receipt */
 
 #receipt{
 
@@ -197,39 +193,17 @@ left:50%;
 
 transform:translate(-50%,-50%);
 
-background:white;
+background:#fff8f0;
 
 color:black;
 
 padding:20px;
 
-width:300px;
+border-radius:10px;
 
 display:none;
 
-border-radius:10px;
-
 font-family:monospace;
-
-}
-
-/* BUTTON */
-
-.bigBtn{
-
-padding:10px;
-
-font-size:16px;
-
-background:#b30000;
-
-color:white;
-
-border:none;
-
-margin-top:5px;
-
-cursor:pointer;
 
 }
 
@@ -246,7 +220,8 @@ cursor:pointer;
 
 <button onclick="page('home')">หน้าแรก</button>
 <button onclick="page('pos')">POS</button>
-<button onclick="page('history')">ออเดอร์</button>
+<button onclick="page('history')">ค้าง</button>
+<button onclick="page('done')">ย้อนหลัง</button>
 
 </div>
 
@@ -260,11 +235,9 @@ cursor:pointer;
 
 <div id="home" class="page active">
 
-<h2>Dashboard</h2>
-
 <div class="card">
 
-ออเดอร์
+ออเดอร์ค้าง
 
 <div id="count" class="big">0</div>
 
@@ -272,7 +245,7 @@ cursor:pointer;
 
 <div class="card">
 
-เงิน
+เงินวันนี้
 
 <div id="money" class="big">0</div>
 
@@ -282,7 +255,7 @@ cursor:pointer;
 
 <button class="bigBtn" onclick="resetDay()">
 
-ล้างข้อมูลวันนี้
+ล้างวันนี้
 
 </button>
 
@@ -294,7 +267,7 @@ cursor:pointer;
 
 <div id="pos" class="page">
 
-<div class="posBox">
+<div class="box">
 
 <input id="customer" placeholder="ลูกค้า">
 
@@ -325,13 +298,13 @@ cursor:pointer;
 </div>
 
 
-<div id="list" class="orderBox"></div>
+<div id="list" class="order"></div>
 
-<div id="total" class="total"></div>
+<div id="total"></div>
 
 <button class="bigBtn" onclick="sendOrder()">
 
-ส่งออเดอร์
+ส่ง
 
 </button>
 
@@ -341,11 +314,11 @@ cursor:pointer;
 
 
 
-<!-- HISTORY -->
+<!-- ค้าง -->
 
 <div id="history" class="page">
 
-<h2>ออเดอร์</h2>
+<h3>ออเดอร์ค้าง</h3>
 
 <div id="historyBox"></div>
 
@@ -353,15 +326,19 @@ cursor:pointer;
 
 
 
+<!-- เสร็จแล้ว -->
+
+<div id="done" class="page">
+
+<h3>ย้อนหลัง</h3>
+
+<div id="doneBox"></div>
+
+</div>
+
+
+
 <div id="receipt"></div>
-
-
-
-<audio id="click">
-
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c4c.mp3">
-
-</audio>
 
 
 
@@ -380,13 +357,9 @@ let history=
 
 JSON.parse(localStorage.getItem("history"))||[]
 
+let doneHistory=
 
-
-function sound(){
-
-document.getElementById("click").play()
-
-}
+JSON.parse(localStorage.getItem("done"))||[]
 
 
 
@@ -402,15 +375,15 @@ updateDash()
 
 showHistory()
 
+showDone()
+
 }
 
 
 
 function checkType(){
 
-let t=
-
-document.getElementById("type").value
+let t=document.getElementById("type").value
 
 document.getElementById("table").style.display=
 
@@ -421,8 +394,6 @@ t=="ทานที่ร้าน"?"inline":"none"
 
 
 function add(m,p){
-
-sound()
 
 if(order[m]){
 
@@ -467,19 +438,11 @@ document.getElementById("total").innerText="รวม "+total
 
 function sendOrder(){
 
-sound()
+let name=document.getElementById("customer").value
 
-let name=
+let type=document.getElementById("type").value
 
-document.getElementById("customer").value
-
-let type=
-
-document.getElementById("type").value
-
-let table=
-
-document.getElementById("table").value
+let table=document.getElementById("table").value
 
 let total=0
 
@@ -544,43 +507,25 @@ showHistory()
 
 
 
-function discord(msg){
+function finish(i){
 
-fetch(WEBHOOK,{
+doneHistory.push(history[i])
 
-method:"POST",
+history.splice(i,1)
 
-headers:{
+localStorage.setItem("history",
 
-"Content-Type":"application/json"
+JSON.stringify(history))
 
-},
+localStorage.setItem("done",
 
-body:JSON.stringify({
+JSON.stringify(doneHistory))
 
-content:msg
+showHistory()
 
-})
+showDone()
 
-})
-
-}
-
-
-
-function receipt(t){
-
-let r=document.getElementById("receipt")
-
-r.style.display="block"
-
-r.innerText=t
-
-setTimeout(()=>{
-
-r.style.display="none"
-
-},3000)
+updateDash()
 
 }
 
@@ -606,21 +551,17 @@ document.getElementById("historyBox").innerHTML=t
 
 
 
-function finish(i){
+function showDone(){
 
-history.splice(i,1)
+let t=""
 
-localStorage.setItem(
+doneHistory.forEach(h=>{
 
-"history",
+t+=h.text+"<hr>"
 
-JSON.stringify(history)
+})
 
-)
-
-showHistory()
-
-updateDash()
+document.getElementById("doneBox").innerHTML=t
 
 }
 
@@ -650,11 +591,9 @@ money
 
 function resetDay(){
 
-if(confirm("ล้าง?")){
-
 history=[]
 
-localStorage.removeItem("history")
+localStorage.setItem("history","[]")
 
 updateDash()
 
@@ -662,6 +601,46 @@ showHistory()
 
 }
 
+
+
+function receipt(t){
+
+let r=document.getElementById("receipt")
+
+r.style.display="block"
+
+r.innerText=t
+
+setTimeout(()=>{
+
+r.style.display="none"
+
+},3000)
+
+}
+
+
+
+function discord(msg){
+
+fetch(WEBHOOK,{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({
+
+content:msg
+
+})
+
+})
+
 }
 
 
@@ -669,6 +648,8 @@ showHistory()
 updateDash()
 
 showHistory()
+
+showDone()
 
 </script>
 
