@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>POS</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Segoe UI;
+background:#f5e6d8;
+}
+
+.topbar{
+background:#6b4b3a;
+color:white;
+display:flex;
+justify-content:space-between;
+padding:10px;
+}
+
+.menuTop button{
+margin:2px;
+padding:6px 10px;
+border:none;
+border-radius:8px;
+background:#d9a066;
+cursor:pointer;
+}
+
+.logout{
+background:#c0392b;
+color:white;
+border:none;
+border-radius:8px;
+padding:6px 10px;
+cursor:pointer;
+}
+
+.page{display:none;padding:10px;}
+.active{display:block;}
+
+.centerBox{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:15px;
+border-radius:12px;
+}
+
+.bigInput{
+font-size:22px;
+padding:8px;
+margin:5px;
+border-radius:8px;
+width:95%;
+}
+
+.bigBtn{
+font-size:20px;
+padding:10px;
+margin:5px;
+border:none;
+border-radius:10px;
+background:#cc7a00;
+color:white;
+cursor:pointer;
+}
+
+.selected{
+background:#27ae60!important;
+}
+
+.posGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+#tableBox{
+display:none;
+grid-template-columns:repeat(6,1fr);
+gap:5px;
+margin-bottom:10px;
+}
+
+.tableBtn{
+padding:6px;
+border:none;
+border-radius:8px;
+background:#bdc3c7;
+cursor:pointer;
+}
+
+.tableSelect{
+background:#e67e22;
+color:white;
+}
+
+.menuGrid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:5px;
+}
+
+.menuBtn{
+font-size:18px;
+padding:8px;
+border:none;
+border-radius:10px;
+background:#ffe0c2;
+cursor:pointer;
+}
+
+.order{
+background:#f2e2d2;
+padding:10px;
+margin-top:10px;
+}
+
+.card{
+background:white;
+padding:15px;
+display:inline-block;
+margin:10px;
+border-radius:10px;
+}
+
+.big{
+font-size:25px;
+color:#cc7a00;
+}
+
+</style>
+</head>
+<body>
+
+<script>
+if(!localStorage.getItem("staff")){
+location.href="index.html"
+}
+</script>
+
+
+<div class="topbar">
+
+<div class="menuTop">
+<button onclick="page('home')">หน้าแรก</button>
+<button onclick="page('pos')">POS</button>
+<button onclick="page('history')">ค้าง</button>
+<button onclick="page('done')">ย้อนหลัง</button>
+</div>
+
+<div>
+<span id="staff"></span>
+<button class="logout" onclick="logout()">⎋</button>
+</div>
+
+</div>
+
+
+<div id="home" class="page active">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+วันนี้ขายได้
+<div id="money" class="big">0</div>
+</div>
+
+<br>
+
+<button class="bigBtn" onclick="clearToday()">
+ล้างข้อมูลวันนี้
+</button>
+
+<button class="bigBtn" onclick="clearAll()">
+ล้างทั้งหมดทั้งระบบ
+</button>
+
+</div>
+
+
+
+<div id="pos" class="page">
+
+<div class="centerBox">
+
+<input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
+
+<div class="menuGrid">
+
+<button class="menuBtn" onclick="add('Coffee',50)">Coffee</button>
+<button class="menuBtn" onclick="add('Tea',40)">Tea</button>
+<button class="menuBtn" onclick="add('Milk',30)">Milk</button>
+<button class="menuBtn" onclick="add('Cake',70)">Cake</button>
+
+</div>
+
+<div id="list" class="order"></div>
+<div id="total" class="big"></div>
+
+<button class="bigBtn" onclick="sendOrder()">ส่ง</button>
+
+</div>
+</div>
+
+
+
+<div id="history" class="page">
+<h2>ค้าง</h2>
+<div id="historyBox"></div>
+</div>
+
+
+
+<div id="done" class="page">
+<h2>ย้อนหลัง</h2>
+<div id="doneBox"></div>
+</div>
+
+
+
+<script>
+
+document.getElementById("staff").innerText =
+localStorage.getItem("staff")
+
+let order={}
+let history=JSON.parse(localStorage.getItem("history"))||[]
+let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
+
+let today=new Date().toDateString()
+
+
+
+function page(p){
+
+document.querySelectorAll(".page")
+.forEach(e=>e.classList.remove("active"))
+
+document.getElementById(p)
+.classList.add("active")
+
+updateDash()
+showHistory()
+showDone()
+
+}
+
+
+
+function logout(){
+
+localStorage.clear()
+location.href="index.html"
+
+}
+
+
+
+function add(m,p){
+
+if(order[m]){
+order[m].qty++
+}else{
+order[m]={qty:1,price:p}
+}
+
+show()
+
+}
+
+
+
+function show(){
+
+let text=""
+let total=0
+
+for(let m in order){
+
+let q=order[m].qty
+let price=q*order[m].price
+
+text+=m+" x"+q+" = "+price+"<br>"
+
+total+=price
+
+}
+
+list.innerHTML=text
+totalBox.innerText="รวม "+total
+
+}
+
+
+
+function sendOrder(){
+
+let total=0
+
+for(let m in order){
+total+=order[m].qty*order[m].price
+}
+
+let now=new Date()
+
+let data={
+
+items:JSON.stringify(order),
+total:total,
+dateKey:now.toDateString(),
+date:now.toLocaleDateString(),
+time:now.toLocaleTimeString()
+
+}
+
+doneHistory.push(data)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+order={}
+show()
+
+updateDash()
+
+}
+
+
+
+function clearToday(){
+
+doneHistory=
+doneHistory.filter(
+h=>h.dateKey!==today
+)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+updateDash()
+showDone()
+
+}
+
+
+
+function clearAll(){
+
+if(!confirm("ล้างทั้งหมด ?")) return
+
+localStorage.clear()
+
+location.reload()
+
+}
+
+
+
+function updateDash(){
+
+let sum=0
+
+doneHistory.forEach(h=>{
+if(h.dateKey===today){
+sum+=h.total
+}
+})
+
+money.innerText=sum
+
+}
+
+
+
+function showHistory(){
+
+historyBox.innerHTML=""
+
+}
+
+
+
+function showDone(){
+
+let t=""
+
+doneHistory.forEach(h=>{
+
+t+=
+h.date+
+"<br>"+h.time+
+"<br>รวม "+h.total+
+"<hr>"
+
+})
+
+doneBox.innerHTML=t
+
+}
+
+
+
+updateDash()
+showDone()
+
+</script>
+
+</body>
+</html>
