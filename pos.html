@@ -148,11 +148,124 @@ width:300px;
 </style>
 </head>
 <body>
-<script>
 
+<script>
 if(!localStorage.getItem("staff")){
 location.href="index.html"
 }
+</script>
+
+
+<div class="topbar">
+
+<div class="menuTop">
+<button onclick="page('home')">หน้าแรก</button>
+<button onclick="page('pos')">POS</button>
+<button onclick="page('history')">ค้าง</button>
+<button onclick="page('done')">ย้อนหลัง</button>
+</div>
+
+<div>
+<span id="staff"></span>
+<button class="logout" onclick="logout()">⎋</button>
+</div>
+
+</div>
+
+
+
+<div id="home" class="page active">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+วันนี้ขายได้
+<div id="money" class="big">0</div>
+</div>
+
+<br>
+
+<button class="bigBtn" onclick="clearToday()">
+ล้างข้อมูลวันนี้
+</button>
+
+</div>
+
+
+
+<div id="pos" class="page">
+
+<div class="centerBox">
+
+<input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
+
+<br>
+
+<button id="eatBtn" class="bigBtn"
+onclick="setType('eat',this)">
+🍽 ทานที่ร้าน
+</button>
+
+<button id="backBtn" class="bigBtn"
+onclick="setType('back',this)">
+🥡 กลับบ้าน
+</button>
+
+<div class="posGrid">
+
+<div>
+
+<div id="tableBox"></div>
+
+<div class="menuGrid">
+
+<button class="menuBtn" onclick="add('Coffee',50)">☕ Coffee</button>
+<button class="menuBtn" onclick="add('Cake',70)">🍰 Cake</button>
+<button class="menuBtn" onclick="add('Tea',40)">🍵 Tea</button>
+<button class="menuBtn" onclick="add('Milk',30)">🥛 Milk</button>
+<button class="menuBtn" onclick="add('Cookie',35)">🍪 Cookie</button>
+<button class="menuBtn" onclick="add('Latte',60)">🥛 Latte</button>
+
+</div>
+
+</div>
+
+
+<div>
+
+<div id="list" class="order"></div>
+<div id="total" class="big"></div>
+
+<button class="bigBtn" onclick="sendOrder()">ส่งออเดอร์</button>
+<button class="bigBtn" onclick="cancelOrder()">ยกเลิก</button>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+
+<div id="history" class="page">
+<h2>ค้าง</h2>
+<div id="historyBox"></div>
+</div>
+
+
+
+<div id="done" class="page">
+<h2>ย้อนหลัง</h2>
+<div id="doneBox"></div>
+</div>
+
+
+<div id="receipt"></div>
+
+
+
+<script>
 
 document.getElementById("staff").innerText =
 localStorage.getItem("staff")
@@ -163,9 +276,7 @@ let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
-
-let todayKey =
-new Date().toDateString()
+let today=new Date().toLocaleDateString()
 
 
 
@@ -174,7 +285,6 @@ let tb=document.getElementById("tableBox")
 for(let i=1;i<=22;i++){
 
 let b=document.createElement("button")
-
 b.innerText="โต๊ะ "+i
 b.className="tableBtn"
 
@@ -300,7 +410,8 @@ total+=price
 }
 
 list.innerHTML=text
-document.getElementById("total").innerText="รวม "+total+" บาท"
+totalBox=document.getElementById("total")
+totalBox.innerText="รวม "+total+" บาท"
 
 }
 
@@ -317,16 +428,12 @@ total+=order[m].qty*order[m].price
 let now=new Date()
 
 let data={
-
 name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
-
-dateKey:now.toDateString(),
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
-
 }
 
 history.push(data)
@@ -364,24 +471,20 @@ m+" x"+obj[m].qty+
 
 receipt.innerHTML=
 
-"<h3>ใบเสร็จ</h3>"+
-d.name+" "+d.table+"<br>"+
-d.date+" "+d.time+
-"<hr>"+
+"<h3>Receipt</h3>"+
+d.name+" "+d.table+
+"<br>"+d.date+
+"<br>"+d.time+
+"<br><br>"+
 items+
 "<hr>"+
-"<b>รวม "+d.total+" บาท</b><br><br>"+
-"<button onclick='closeReceipt()'>ปิด</button>"
+"รวม "+d.total
 
 receipt.style.display="block"
 
-}
-
-
-
-function closeReceipt(){
-
+setTimeout(()=>{
 receipt.style.display="none"
+},2500)
 
 }
 
@@ -410,48 +513,6 @@ updateDash()
 
 
 
-function clearToday(){
-
-history =
-history.filter(h=>h.dateKey!==todayKey)
-
-doneHistory =
-doneHistory.filter(h=>h.dateKey!==todayKey)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-updateDash()
-showHistory()
-showDone()
-
-}
-
-
-
-function updateDash(){
-
-let sum=0
-
-doneHistory.forEach(h=>{
-if(h.dateKey===todayKey){
-sum+=h.total
-}
-})
-
-money.innerText=sum
-
-}
-
-
-
 function showHistory(){
 
 let t=""
@@ -475,7 +536,8 @@ t+=
 h.name+" "+h.table+
 "<br>"+h.date+
 "<br>"+h.time+
-"<br>"+items+
+"<br>"+
+items+
 "<b>รวม "+h.total+"</b>"+
 `<br><button onclick="finish(${i})">เสร็จ</button><hr>`
 
@@ -503,6 +565,39 @@ h.name+" "+h.table+
 })
 
 doneBox.innerHTML=t
+
+}
+
+
+
+function clearToday(){
+
+doneHistory=
+doneHistory.filter(h=>h.date!==today)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+updateDash()
+showDone()
+
+}
+
+
+
+function updateDash(){
+
+let sum=0
+
+doneHistory.forEach(h=>{
+if(h.date===today){
+sum+=h.total
+}
+})
+
+money.innerText=sum
 
 }
 
