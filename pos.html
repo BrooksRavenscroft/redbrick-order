@@ -5,18 +5,7 @@
 <title>Redbrick POS</title>
 
 <style>
-if(!localStorage.getItem("staff")){
 
-location.href="login.html"
-
-}
-function logout(){
-
-localStorage.removeItem("staff")
-
-location.href="login.html"
-
-}
 body{
 margin:0;
 font-family:Segoe UI;
@@ -28,11 +17,9 @@ background:#6b4b3a;
 color:white;
 display:flex;
 justify-content:space-between;
+align-items:center;
 padding:10px;
 }
-<button onclick="logout()">
-Logout
-</button>
 
 .menuTop button{
 padding:8px;
@@ -43,8 +30,26 @@ background:#d9a066;
 cursor:pointer;
 }
 
-.staff{
-font-weight:bold;
+.staffBox{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logoutIcon{
+background:#c0392b;
+border:none;
+border-radius:8px;
+padding:6px;
+cursor:pointer;
+transition:0.2s;
+display:flex;
+align-items:center;
+}
+
+.logoutIcon:hover{
+background:#e74c3c;
+transform:scale(1.1);
 }
 
 .logo{
@@ -142,8 +147,13 @@ margin:3px;
 </head>
 <body>
 
+
 <audio id="click"
 src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+
+<audio id="logoutSound"
+src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
 
 
 <div class="topbar">
@@ -157,12 +167,33 @@ src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
 </div>
 
+
+<div class="staffBox">
+
 <div id="staff"></div>
+
+<button
+onclick="logout()"
+class="logoutIcon"
+title="ออกจากระบบ">
+
+<svg viewBox="0 0 24 24" width="20">
+
+<path fill="white"
+d="M16 13v-2H7V8l-5 4 5 4v-3zM20
+3H12c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4h-2v4c0
+1.1.9 2 2 2h8c1.1 0 2-.9
+2-2V5c0-1.1-.9-2-2-2z"/>
+
+</svg>
+
+</button>
+
+</div>
 
 </div>
 
 
-<!-- HOME -->
 
 <div id="home" class="page active">
 
@@ -180,16 +211,12 @@ src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
 
 <button class="bigBtn"
 onclick="resetDone()">
-
 ล้างย้อนหลัง
-
 </button>
 
 </div>
 
 
-
-<!-- POS -->
 
 <div id="pos" class="page">
 
@@ -283,8 +310,6 @@ onclick="cancelOrder()">
 
 
 
-<!-- ค้าง -->
-
 <div id="history" class="page">
 
 <div class="logo">📋 ค้าง</div>
@@ -295,8 +320,6 @@ onclick="cancelOrder()">
 
 
 
-<!-- done -->
-
 <div id="done" class="page">
 
 <div class="logo">📜 ย้อนหลัง</div>
@@ -306,11 +329,18 @@ onclick="cancelOrder()">
 </div>
 
 
+
 <div id="receipt"></div>
 
 
 
 <script>
+
+
+if(!localStorage.getItem("staff")){
+location.href="login.html"
+}
+
 
 let staff=
 localStorage.getItem("staff")
@@ -356,6 +386,23 @@ showDone()
 }
 
 
+function logout(){
+
+document.getElementById(
+"logoutSound"
+).play()
+
+setTimeout(()=>{
+
+localStorage.removeItem("staff")
+
+location.href="login.html"
+
+},300)
+
+}
+
+
 function checkType(){
 
 let t=
@@ -382,13 +429,9 @@ function add(m,p){
 document.getElementById("click").play()
 
 if(order[m]){
-
 order[m].qty++
-
 }else{
-
 order[m]={qty:1,price:p}
-
 }
 
 show()
@@ -401,9 +444,7 @@ function minus(m){
 order[m].qty--
 
 if(order[m].qty<=0){
-
 delete order[m]
-
 }
 
 show()
@@ -622,9 +663,7 @@ Thank you
 `
 
 setTimeout(()=>{
-
 r.style.display="none"
-
 },5000)
 
 }
