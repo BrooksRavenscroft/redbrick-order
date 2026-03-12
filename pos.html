@@ -12,6 +12,8 @@ font-family:Segoe UI;
 background:#f5e6d8;
 }
 
+/* ---------- TOP ---------- */
+
 .topbar{
 background:#6b4b3a;
 color:white;
@@ -20,22 +22,25 @@ justify-content:space-between;
 padding:10px;
 }
 
-button{
-cursor:pointer;
-border:none;
-border-radius:8px;
-padding:8px;
-}
-
 .menuTop button{
 margin:2px;
+padding:6px 10px;
+border:none;
+border-radius:8px;
 background:#d9a066;
+cursor:pointer;
 }
 
 .logout{
-background:red;
+background:#c0392b;
 color:white;
+border:none;
+border-radius:8px;
+padding:6px 10px;
+cursor:pointer;
 }
+
+/* ---------- PAGE ---------- */
 
 .page{
 display:none;
@@ -46,36 +51,140 @@ padding:10px;
 display:block;
 }
 
-.card{
+/* ---------- CENTER POS ---------- */
+
+.centerBox{
+
+max-width:900px;
+margin:auto;
 background:white;
 padding:15px;
-margin:10px;
-display:inline-block;
+border-radius:12px;
+box-shadow:0 0 10px #0003;
+
+}
+
+/* ---------- INPUT ---------- */
+
+.bigInput{
+
+font-size:22px;
+padding:8px;
+margin:5px;
+border-radius:8px;
+width:95%;
+
+}
+
+.bigBtn{
+
+font-size:20px;
+padding:10px;
+margin:5px;
+border:none;
 border-radius:10px;
+background:#cc7a00;
+color:white;
+cursor:pointer;
+
+}
+
+/* ---------- TABLE ---------- */
+
+#tableBox{
+
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:5px;
+margin-top:10px;
+
+}
+
+.tableBtn{
+
+padding:6px;
+border:none;
+border-radius:8px;
+background:#bdc3c7;
+cursor:pointer;
+
+}
+
+.tableFree{
+
+background:#bdc3c7;
+
+}
+
+.tableUse{
+
+background:#e67e22;
+color:white;
+
+}
+
+.tableBusy{
+
+background:#e74c3c;
+color:white;
+
+}
+
+/* ---------- MENU ---------- */
+
+.menuGrid{
+
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:5px;
+margin-top:10px;
+
+}
+
+.menuBtn{
+
+font-size:18px;
+padding:8px;
+border:none;
+border-radius:10px;
+background:#ffe0c2;
+cursor:pointer;
+
+}
+
+/* ---------- ORDER ---------- */
+
+.order{
+
+background:#f2e2d2;
+padding:10px;
+margin-top:10px;
+
+}
+
+/* ---------- DASH ---------- */
+
+.card{
+
+background:white;
+padding:15px;
+display:inline-block;
+margin:10px;
+border-radius:10px;
+
 }
 
 .big{
+
 font-size:25px;
 color:#cc7a00;
-}
 
-.menu button{
-font-size:18px;
-margin:5px;
-background:#ffe0c2;
-}
-
-.order{
-background:white;
-padding:10px;
-margin-top:10px;
 }
 
 </style>
 
 </head>
 <body>
-
 
 <script>
 
@@ -101,8 +210,7 @@ location.href="index.html"
 
 <span id="staff"></span>
 
-<button
-class="logout"
+<button class="logout"
 onclick="logout()"
 title="Logout">
 ⎋
@@ -113,6 +221,7 @@ title="Logout">
 </div>
 
 
+<!-- ================= HOME ================= -->
 
 <div id="home" class="page active">
 
@@ -128,47 +237,94 @@ title="Logout">
 <div id="money" class="big">0</div>
 </div>
 
-<button onclick="resetDone()">
-ล้างย้อนหลัง
-</button>
-
 </div>
 
 
 
+<!-- ================= POS ================= -->
+
 <div id="pos" class="page">
+
+<div class="centerBox">
 
 <h2>POS</h2>
 
 <input id="customer"
+class="bigInput"
 placeholder="ชื่อลูกค้า">
-
-<select id="type">
-<option>ทานที่ร้าน</option>
-<option>กลับบ้าน</option>
-</select>
 
 <br>
 
-<button onclick="add('Coffee',50)">Coffee</button>
-<button onclick="add('Cake',70)">Cake</button>
-<button onclick="add('Tea',40)">Tea</button>
+<button class="bigBtn"
+onclick="setType('eat')">
+🍽 ทานที่ร้าน
+</button>
+
+<button class="bigBtn"
+onclick="setType('back')">
+🥡 กลับบ้าน
+</button>
+
+
+<div id="tableBox"></div>
+
+
+<div class="menuGrid">
+
+<button class="menuBtn"
+onclick="add('Coffee',50)">
+☕ Coffee
+</button>
+
+<button class="menuBtn"
+onclick="add('Latte',60)">
+🥛 Latte
+</button>
+
+<button class="menuBtn"
+onclick="add('Cake',70)">
+🍰 Cake
+</button>
+
+<button class="menuBtn"
+onclick="add('Tea',40)">
+🍵 Tea
+</button>
+
+<button class="menuBtn"
+onclick="add('Milk',30)">
+🥛 Milk
+</button>
+
+<button class="menuBtn"
+onclick="add('Cookie',35)">
+🍪 Cookie
+</button>
+
+</div>
+
 
 <div id="list" class="order"></div>
 
 <div id="total"></div>
 
-<button onclick="sendOrder()">
-ส่ง
+<button class="bigBtn"
+onclick="sendOrder()">
+ส่งออเดอร์
 </button>
 
-<button onclick="cancelOrder()">
+<button class="bigBtn"
+onclick="cancelOrder()">
 ยกเลิก
 </button>
 
 </div>
 
+</div>
 
+
+
+<!-- ================= HISTORY ================= -->
 
 <div id="history" class="page">
 
@@ -179,6 +335,8 @@ placeholder="ชื่อลูกค้า">
 </div>
 
 
+
+<!-- ================= DONE ================= -->
 
 <div id="done" class="page">
 
@@ -204,6 +362,32 @@ JSON.parse(localStorage.getItem("history"))||[]
 let doneHistory=
 JSON.parse(localStorage.getItem("done"))||[]
 
+let table=""
+let type=""
+
+
+
+/* ---------- TABLE CREATE ---------- */
+
+let tableBox=document.getElementById("tableBox")
+
+for(let i=1;i<=22;i++){
+
+let b=document.createElement("button")
+
+b.innerText="โต๊ะ "+i
+
+b.className="tableBtn tableFree"
+
+b.onclick=()=>setTable(i,b)
+
+tableBox.appendChild(b)
+
+}
+
+
+
+/* ---------- PAGE ---------- */
 
 function page(p){
 
@@ -222,6 +406,9 @@ showDone()
 }
 
 
+
+/* ---------- LOGIN ---------- */
+
 function logout(){
 
 localStorage.removeItem("staff")
@@ -230,6 +417,35 @@ location.href="index.html"
 
 }
 
+
+
+/* ---------- TYPE ---------- */
+
+function setType(t){
+
+type=t
+
+}
+
+
+
+/* ---------- TABLE ---------- */
+
+function setTable(i,btn){
+
+table="โต๊ะ "+i
+
+document
+.querySelectorAll(".tableBtn")
+.forEach(b=>b.classList.remove("tableUse"))
+
+btn.classList.add("tableUse")
+
+}
+
+
+
+/* ---------- MENU ---------- */
 
 function add(m,p){
 
@@ -260,10 +476,14 @@ total+=q*order[m].price
 }
 
 list.innerHTML=text
+
 totalDiv.innerText="รวม "+total
 
 }
 
+
+
+/* ---------- CANCEL ---------- */
 
 function cancelOrder(){
 
@@ -272,6 +492,9 @@ show()
 
 }
 
+
+
+/* ---------- SEND ---------- */
 
 function sendOrder(){
 
@@ -286,8 +509,13 @@ order[m].price
 }
 
 history.push({
-text:JSON.stringify(order),
+
+text:
+document.getElementById("customer").value+
+" "+table,
+
 total:total
+
 })
 
 localStorage.setItem(
@@ -302,6 +530,9 @@ updateDash()
 
 }
 
+
+
+/* ---------- HISTORY ---------- */
 
 function finish(i){
 
@@ -341,6 +572,7 @@ historyBox.innerHTML=t
 }
 
 
+
 function showDone(){
 
 let t=""
@@ -356,6 +588,9 @@ doneBox.innerHTML=t
 }
 
 
+
+/* ---------- DASH ---------- */
+
 function updateDash(){
 
 let money=0
@@ -365,17 +600,7 @@ money+=h.total
 })
 
 count.innerText=history.length
-moneyDiv.innerText=money
-
-}
-
-
-function resetDone(){
-
-doneHistory=[]
-localStorage.setItem("done","[]")
-showDone()
-updateDash()
+money.innerText=money
 
 }
 
