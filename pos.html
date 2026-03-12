@@ -5,7 +5,18 @@
 <title>Redbrick POS</title>
 
 <style>
+if(!localStorage.getItem("staff")){
 
+location.href="login.html"
+
+}
+function logout(){
+
+localStorage.removeItem("staff")
+
+location.href="login.html"
+
+}
 body{
 margin:0;
 font-family:Segoe UI;
@@ -19,6 +30,9 @@ display:flex;
 justify-content:space-between;
 padding:10px;
 }
+<button onclick="logout()">
+Logout
+</button>
 
 .menuTop button{
 padding:8px;
