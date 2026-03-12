@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick POS</title>
+<title>POS</title>
 
 <style>
 
@@ -17,45 +17,24 @@ background:#6b4b3a;
 color:white;
 display:flex;
 justify-content:space-between;
-align-items:center;
 padding:10px;
 }
 
-.menuTop button{
+button{
+cursor:pointer;
+border:none;
+border-radius:8px;
 padding:8px;
+}
+
+.menuTop button{
 margin:2px;
-border:none;
-border-radius:8px;
 background:#d9a066;
-cursor:pointer;
 }
 
-.staffBox{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.logoutIcon{
-background:#c0392b;
-border:none;
-border-radius:8px;
-padding:6px;
-cursor:pointer;
-transition:0.2s;
-display:flex;
-align-items:center;
-}
-
-.logoutIcon:hover{
-background:#e74c3c;
-transform:scale(1.1);
-}
-
-.logo{
-text-align:center;
-font-size:40px;
-margin:10px;
+.logout{
+background:red;
+color:white;
 }
 
 .page{
@@ -70,9 +49,9 @@ display:block;
 .card{
 background:white;
 padding:15px;
-border-radius:10px;
-display:inline-block;
 margin:10px;
+display:inline-block;
+border-radius:10px;
 }
 
 .big{
@@ -80,66 +59,16 @@ font-size:25px;
 color:#cc7a00;
 }
 
-.box{
-background:white;
-padding:15px;
-border-radius:10px;
-max-width:900px;
-margin:auto;
-}
-
-input,select{
-font-size:20px;
-padding:8px;
-margin:5px;
-border-radius:8px;
-}
-
-.menuGrid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-}
-
-.menuBtn{
+.menu button{
 font-size:18px;
-padding:10px;
+margin:5px;
 background:#ffe0c2;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
-
-.bigBtn{
-background:#cc7a00;
-color:white;
-border:none;
-padding:10px;
-margin-top:5px;
-border-radius:8px;
-cursor:pointer;
 }
 
 .order{
-background:#f2e2d2;
+background:white;
 padding:10px;
 margin-top:10px;
-}
-
-#receipt{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-padding:20px;
-border-radius:10px;
-display:none;
-}
-
-.tableBtn{
-padding:8px;
-margin:3px;
 }
 
 </style>
@@ -148,12 +77,13 @@ margin:3px;
 <body>
 
 
-<audio id="click"
-src="https://www.soundjay.com/buttons/sounds/button-16.mp3"></audio>
+<script>
 
-<audio id="logoutSound"
-src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+if(!localStorage.getItem("staff")){
+location.href="index.html"
+}
 
+</script>
 
 
 <div class="topbar">
@@ -167,26 +97,15 @@ src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
 
 </div>
 
+<div>
 
-<div class="staffBox">
-
-<div id="staff"></div>
+<span id="staff"></span>
 
 <button
+class="logout"
 onclick="logout()"
-class="logoutIcon"
-title="ออกจากระบบ">
-
-<svg viewBox="0 0 24 24" width="20">
-
-<path fill="white"
-d="M16 13v-2H7V8l-5 4 5 4v-3zM20
-3H12c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4h-2v4c0
-1.1.9 2 2 2h8c1.1 0 2-.9
-2-2V5c0-1.1-.9-2-2-2z"/>
-
-</svg>
-
+title="Logout">
+⎋
 </button>
 
 </div>
@@ -197,7 +116,7 @@ d="M16 13v-2H7V8l-5 4 5 4v-3zM20
 
 <div id="home" class="page active">
 
-<div class="logo">☕ Redbrick Cafe</div>
+<h2>Dashboard</h2>
 
 <div class="card">
 ออเดอร์ค้าง
@@ -209,8 +128,7 @@ d="M16 13v-2H7V8l-5 4 5 4v-3zM20
 <div id="money" class="big">0</div>
 </div>
 
-<button class="bigBtn"
-onclick="resetDone()">
+<button onclick="resetDone()">
 ล้างย้อนหลัง
 </button>
 
@@ -220,91 +138,33 @@ onclick="resetDone()">
 
 <div id="pos" class="page">
 
-<div class="logo">☕ Redbrick Cafe</div>
-
-<div class="box">
+<h2>POS</h2>
 
 <input id="customer"
 placeholder="ชื่อลูกค้า">
 
-<select id="type"
-onchange="checkType()">
-
+<select id="type">
 <option>ทานที่ร้าน</option>
 <option>กลับบ้าน</option>
-
 </select>
 
+<br>
 
-<div id="tableBox">
-
-<button class="tableBtn"
-onclick="setTable(1)">โต๊ะ1</button>
-
-<button class="tableBtn"
-onclick="setTable(2)">โต๊ะ2</button>
-
-<button class="tableBtn"
-onclick="setTable(3)">โต๊ะ3</button>
-
-<button class="tableBtn"
-onclick="setTable(4)">โต๊ะ4</button>
-
-</div>
-
-
-
-<div class="menuGrid">
-
-<button class="menuBtn"
-onclick="add('Coffee',50)">
-☕ Coffee
-</button>
-
-<button class="menuBtn"
-onclick="add('Latte',60)">
-🥛 Latte
-</button>
-
-<button class="menuBtn"
-onclick="add('Cake',70)">
-🍰 Cake
-</button>
-
-<button class="menuBtn"
-onclick="add('Tea',40)">
-🍵 Tea
-</button>
-
-<button class="menuBtn"
-onclick="add('Milk',30)">
-🥛 Milk
-</button>
-
-<button class="menuBtn"
-onclick="add('Cookie',35)">
-🍪 Cookie
-</button>
-
-</div>
-
+<button onclick="add('Coffee',50)">Coffee</button>
+<button onclick="add('Cake',70)">Cake</button>
+<button onclick="add('Tea',40)">Tea</button>
 
 <div id="list" class="order"></div>
 
 <div id="total"></div>
 
-
-<button class="bigBtn"
-onclick="sendOrder()">
-ส่งออเดอร์
+<button onclick="sendOrder()">
+ส่ง
 </button>
 
-<button class="bigBtn"
-onclick="cancelOrder()">
+<button onclick="cancelOrder()">
 ยกเลิก
 </button>
-
-</div>
 
 </div>
 
@@ -312,7 +172,7 @@ onclick="cancelOrder()">
 
 <div id="history" class="page">
 
-<div class="logo">📋 ค้าง</div>
+<h2>ค้าง</h2>
 
 <div id="historyBox"></div>
 
@@ -322,7 +182,7 @@ onclick="cancelOrder()">
 
 <div id="done" class="page">
 
-<div class="logo">📜 ย้อนหลัง</div>
+<h2>ย้อนหลัง</h2>
 
 <div id="doneBox"></div>
 
@@ -330,43 +190,19 @@ onclick="cancelOrder()">
 
 
 
-<div id="receipt"></div>
-
-
-
 <script>
 
 
-if(!localStorage.getItem("staff")){
-location.href="login.html"
-}
-
-
-let staff=
-localStorage.getItem("staff")
-
 document.getElementById("staff")
-.innerText=staff
+.innerText=
+localStorage.getItem("staff")
 
 
 let order={}
-
 let history=
-JSON.parse(
-localStorage.getItem("history")
-)||[]
-
+JSON.parse(localStorage.getItem("history"))||[]
 let doneHistory=
-JSON.parse(
-localStorage.getItem("done")
-)||[]
-
-let orderNumber=
-Number(
-localStorage.getItem("orderNumber")
-)||1
-
-let table=""
+JSON.parse(localStorage.getItem("done"))||[]
 
 
 function page(p){
@@ -388,63 +224,19 @@ showDone()
 
 function logout(){
 
-document.getElementById(
-"logoutSound"
-).play()
-
-setTimeout(()=>{
-
 localStorage.removeItem("staff")
 
-location.href="login.html"
-
-},300)
-
-}
-
-
-function checkType(){
-
-let t=
-document.getElementById("type").value
-
-document.getElementById("tableBox")
-.style.display=
-t=="ทานที่ร้าน"
-?"block"
-:"none"
-
-}
-
-
-function setTable(t){
-
-table="โต๊ะ"+t
+location.href="index.html"
 
 }
 
 
 function add(m,p){
 
-document.getElementById("click").play()
-
 if(order[m]){
 order[m].qty++
 }else{
 order[m]={qty:1,price:p}
-}
-
-show()
-
-}
-
-
-function minus(m){
-
-order[m].qty--
-
-if(order[m].qty<=0){
-delete order[m]
 }
 
 show()
@@ -460,25 +252,15 @@ let total=0
 for(let m in order){
 
 let q=order[m].qty
-let p=order[m].price
 
-text+=
-m+
-" x"+q+
+text+=m+" x"+q+"<br>"
 
-` <button onclick="minus('${m}')">-</button>`
-
-+"<br>"
-
-total+=q*p
+total+=q*order[m].price
 
 }
 
-document.getElementById("list")
-.innerHTML=text
-
-document.getElementById("total")
-.innerText="รวม "+total
+list.innerHTML=text
+totalDiv.innerText="รวม "+total
 
 }
 
@@ -493,44 +275,18 @@ show()
 
 function sendOrder(){
 
-let name=
-document.getElementById("customer").value
-
-let type=
-document.getElementById("type").value
-
-let now=new Date()
-
-let time=
-now.toLocaleTimeString()
-
 let total=0
-let text=""
 
 for(let m in order){
 
-let q=order[m].qty
-let p=order[m].price
-
-text+=m+" x"+q+"\n"
-
-total+=q*p
+total+=
+order[m].qty*
+order[m].price
 
 }
 
-let full=
-
-"Order #"+orderNumber+"\n"+
-time+"\n"+
-name+"\n"+
-type+"\n"+
-table+"\n"+
-text+
-"รวม "+total
-
-
 history.push({
-text:full,
+text:JSON.stringify(order),
 total:total
 })
 
@@ -539,21 +295,10 @@ localStorage.setItem(
 JSON.stringify(history)
 )
 
-orderNumber++
-
-localStorage.setItem(
-"orderNumber",
-orderNumber
-)
-
-receipt(full)
-
 order={}
-
 show()
 
 updateDash()
-showHistory()
 
 }
 
@@ -591,8 +336,7 @@ h.text+
 
 })
 
-document.getElementById("historyBox")
-.innerHTML=t
+historyBox.innerHTML=t
 
 }
 
@@ -607,8 +351,7 @@ t+=h.text+"<hr>"
 
 })
 
-document.getElementById("doneBox")
-.innerHTML=t
+doneBox.innerHTML=t
 
 }
 
@@ -621,11 +364,8 @@ doneHistory.forEach(h=>{
 money+=h.total
 })
 
-document.getElementById("count")
-.innerText=history.length
-
-document.getElementById("money")
-.innerText=money
+count.innerText=history.length
+moneyDiv.innerText=money
 
 }
 
@@ -633,38 +373,9 @@ document.getElementById("money")
 function resetDone(){
 
 doneHistory=[]
-
-localStorage.setItem(
-"done",
-"[]"
-)
-
+localStorage.setItem("done","[]")
 showDone()
 updateDash()
-
-}
-
-
-function receipt(t){
-
-let r=
-document.getElementById("receipt")
-
-r.style.display="block"
-
-r.innerHTML=
-
-`
-☕ Redbrick Cafe
-<hr>
-<pre>${t}</pre>
-<hr>
-Thank you
-`
-
-setTimeout(()=>{
-r.style.display="none"
-},5000)
 
 }
 
