@@ -5,7 +5,23 @@
 <title>Redbrick Cafe</title>
 
 <style>
+function resetDone(){
 
+if(confirm("ล้างย้อนหลังทั้งหมด?")){
+
+doneHistory=[]
+
+localStorage.setItem(
+"done",
+"[]"
+)
+
+showDone()
+updateDash()
+
+}
+
+}
 body{
 margin:0;
 font-family:Segoe UI;
@@ -80,6 +96,19 @@ padding:15px;
 border-radius:12px;
 max-width:900px;
 margin:auto;
+input, select{
+
+font-size:18px;
+padding:8px;
+margin:5px;
+border-radius:8px;
+border:1px solid #ccc;
+.bigInput{
+
+font-size:22px;
+padding:10px;
+width:250px;
+
 }
 
 .menuGrid{
@@ -187,18 +216,16 @@ text-align:center;
 
 <div class="box">
 
-<input id="customer" placeholder="ลูกค้า">
+<input id="customer"
+class="bigInput"
+placeholder="ชื่อลูกค้า">
 
-<select id="type" onchange="checkType()">
-<option>ทานที่ร้าน</option>
-<option>กลับบ้าน</option>
-</select>
+<select id="type"
+class="bigInput"
+onchange="checkType()">
 
-<select id="table">
-<option>โต๊ะ1</option>
-<option>โต๊ะ2</option>
-<option>โต๊ะ3</option>
-</select>
+<select id="table"
+class="bigInput">
 
 
 <div class="menuGrid">
@@ -273,8 +300,14 @@ onclick="sendOrder()">
 📜 ประวัติย้อนหลัง
 </div>
 
-<div id="doneBox"></div>
+<button class="bigBtn"
+onclick="resetDone()">
 
+ล้างประวัติย้อนหลัง
+
+</button>
+
+<div id="doneBox"></div>
 </div>
 
 
@@ -480,7 +513,7 @@ function updateDash(){
 
 let money=0
 
-history.forEach(h=>{
+doneHistory.forEach(h=>{
 money+=h.total
 })
 
