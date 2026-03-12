@@ -13,117 +13,89 @@ background:#1e1e1e;
 color:white;
 }
 
-/* ===== TOP ===== */
+/* TOP */
 
 .topbar{
-
 background:#111;
 padding:10px;
-
 display:flex;
 justify-content:space-between;
-align-items:center;
-
 }
 
 .menuTop button{
-
-margin-right:5px;
-padding:6px 10px;
-border:none;
+margin:3px;
+padding:6px;
 background:#333;
 color:white;
-cursor:pointer;
-
-}
-
-.menuTop button:hover{
-
-background:#b30000;
-
+border:none;
 }
 
 .staff{
-
 color:#00ffaa;
-
 }
 
-/* ===== PAGE ===== */
+/* page */
 
 .page{
-
 display:none;
 padding:20px;
-
 }
 
 .active{
-
 display:block;
-
 }
 
-/* ===== DASHBOARD ===== */
+/* dashboard */
 
 .card{
-
 background:#2b2b2b;
 padding:20px;
 border-radius:10px;
-margin:10px;
-width:250px;
+width:200px;
 display:inline-block;
-
+margin:10px;
 }
 
 .big{
-
 font-size:30px;
-
 }
 
-/* ===== POS ===== */
+/* pos */
 
 .box{
-
 background:#2b2b2b;
 padding:20px;
 width:500px;
 margin:auto;
-border-radius:10px;
-
-}
-
-button{
-
-padding:8px;
-margin:4px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-
 }
 
 .menu button{
-
-background:#444;
-color:white;
-
+margin:5px;
+padding:8px;
 }
 
 .order{
-
 background:#111;
 padding:10px;
 margin-top:10px;
-
 }
 
-.history{
+/* receipt */
 
-background:#111;
-padding:10px;
+#receipt{
+
+position:fixed;
+top:50%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+background:white;
+color:black;
+
+padding:20px;
+
+display:none;
 
 }
 
@@ -133,75 +105,68 @@ padding:10px;
 <body>
 
 
-<!-- TOP -->
-
 <div class="topbar">
 
 <div class="menuTop">
 
-<button onclick="showPage('home')">
-หน้าแรก
-</button>
-
-<button onclick="showPage('pos')">
-POS
-</button>
-
-<button onclick="showPage('history')">
-ออเดอร์
-</button>
+<button onclick="showPage('home')">หน้าแรก</button>
+<button onclick="showPage('pos')">POS</button>
+<button onclick="showPage('history')">ออเดอร์</button>
 
 </div>
 
-<div class="staff" id="staffName"></div>
+<div id="staffName"></div>
 
 </div>
 
 
 
-<!-- ================= HOME ================= -->
+<!-- HOME -->
 
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
 
 <div class="card">
-
 ออเดอร์วันนี้
-
-<div id="orderCount" class="big">
-0
+<div id="orderCount" class="big">0</div>
 </div>
-
-</div>
-
 
 <div class="card">
-
-รายได้วันนี้
-
-<div id="money" class="big">
-0
+รายได้
+<div id="money" class="big">0</div>
 </div>
 
-</div>
+<br>
+
+<button onclick="resetDay()">
+ล้างข้อมูลวันนี้
+</button>
 
 </div>
 
 
 
-<!-- ================= POS ================= -->
+<!-- POS -->
 
 <div id="pos" class="page">
 
 <div class="box">
 
-<input id="name" placeholder="ลูกค้า">
+<input id="customer" placeholder="ชื่อลูกค้า">
 
-<select id="type">
+<select id="type" onchange="checkType()">
 <option>ทานที่ร้าน</option>
 <option>กลับบ้าน</option>
 </select>
+
+<select id="table">
+<option>โต๊ะ1</option>
+<option>โต๊ะ2</option>
+<option>โต๊ะ3</option>
+<option>โต๊ะ4</option>
+</select>
+
 
 <h3>MENU</h3>
 
@@ -218,7 +183,7 @@ POS
 <div id="total"></div>
 
 <button onclick="sendOrder()">
-ส่ง
+ส่งออเดอร์
 </button>
 
 </div>
@@ -227,25 +192,35 @@ POS
 
 
 
-<!-- ================= HISTORY ================= -->
+<!-- HISTORY -->
 
 <div id="history" class="page">
 
-<h2>ออเดอร์ที่ส่งแล้ว</h2>
+<h2>รายการ</h2>
 
-<div id="historyBox" class="history"></div>
+<div id="historyBox"></div>
 
 </div>
 
 
 
+<div id="receipt"></div>
+
+
+
 <script>
 
+const WEBHOOK = "ใส่ลิงค์"
+
 let staff = localStorage.getItem("staff")
-document.getElementById("staffName").innerText = staff
+document.getElementById("staffName").innerText=staff
 
 let order={}
-let history = JSON.parse(localStorage.getItem("history")) || []
+
+let history =
+JSON.parse(localStorage.getItem("history"))
+|| []
+
 
 
 function showPage(p){
@@ -256,8 +231,21 @@ document.querySelectorAll(".page")
 document.getElementById(p)
 .classList.add("active")
 
-updateDashboard()
+updateDash()
 showHistory()
+
+}
+
+
+function checkType(){
+
+let t =
+document.getElementById("type").value
+
+document.getElementById("table").style.display =
+t=="ทานที่ร้าน"
+? "inline"
+: "none"
 
 }
 
@@ -303,6 +291,15 @@ document.getElementById("total").innerText="รวม "+total
 
 function sendOrder(){
 
+let name =
+document.getElementById("customer").value
+
+let type =
+document.getElementById("type").value
+
+let table =
+document.getElementById("table").value
+
 let total=0
 let text=""
 
@@ -317,9 +314,20 @@ total+=q*p
 
 }
 
+
+let full =
+name+"\n"+
+type+"\n"+
+table+"\n"+
+text+
+"รวม "+total
+
+
 history.push({
-text:text,
+
+text:full,
 total:total
+
 })
 
 localStorage.setItem(
@@ -327,14 +335,60 @@ localStorage.setItem(
 JSON.stringify(history)
 )
 
+
+showReceipt(full)
+
+sendDiscord(full)
+
 order={}
 
 show()
 
-updateDashboard()
+updateDash()
 showHistory()
 
 }
+
+
+
+function sendDiscord(msg){
+
+fetch(WEBHOOK,{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+content:msg
+
+})
+
+})
+
+}
+
+
+function showReceipt(t){
+
+let r =
+document.getElementById("receipt")
+
+r.style.display="block"
+
+r.innerText=t
+
+setTimeout(()=>{
+
+r.style.display="none"
+
+},3000)
+
+}
+
 
 
 function showHistory(){
@@ -345,8 +399,6 @@ history.forEach((h,i)=>{
 
 t+=
 h.text+
-" = "+
-h.total+
 ` <button onclick="finish(${i})">เสร็จ</button><hr>`
 
 })
@@ -354,6 +406,7 @@ h.total+
 document.getElementById("historyBox").innerHTML=t
 
 }
+
 
 
 function finish(i){
@@ -366,31 +419,48 @@ JSON.stringify(history)
 )
 
 showHistory()
-updateDashboard()
+updateDash()
 
 }
 
 
-function updateDashboard(){
+
+function updateDash(){
 
 let money=0
 
 history.forEach(h=>{
-
 money+=h.total
-
 })
 
-document.getElementById("orderCount")
-.innerText=history.length
+document.getElementById("orderCount").innerText =
+history.length
 
-document.getElementById("money")
-.innerText=money
+document.getElementById("money").innerText =
+money
 
 }
 
 
-updateDashboard()
+
+function resetDay(){
+
+if(confirm("ล้างข้อมูลวันนี้?")){
+
+history=[]
+
+localStorage.removeItem("history")
+
+updateDash()
+showHistory()
+
+}
+
+}
+
+
+
+updateDash()
 showHistory()
 
 </script>
