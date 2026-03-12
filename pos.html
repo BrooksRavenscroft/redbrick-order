@@ -58,8 +58,8 @@ width:95%;
 }
 
 .bigBtn{
-font-size:20px;
-padding:10px;
+font-size:18px;
+padding:8px;
 margin:5px;
 border:none;
 border-radius:10px;
@@ -68,8 +68,8 @@ color:white;
 cursor:pointer;
 }
 
-.selected{
-background:#27ae60!important;
+.green{
+background:#27ae60;
 }
 
 .posGrid{
@@ -82,7 +82,7 @@ gap:10px;
 display:none;
 grid-template-columns:repeat(6,1fr);
 gap:5px;
-margin-bottom:10px;
+margin:5px 0;
 }
 
 .tableBtn{
@@ -100,7 +100,7 @@ color:white;
 
 .menuGrid{
 display:grid;
-grid-template-columns:repeat(2,1fr);
+grid-template-columns:1fr 1fr;
 gap:5px;
 }
 
@@ -116,7 +116,6 @@ cursor:pointer;
 .order{
 background:#f2e2d2;
 padding:10px;
-margin-top:10px;
 }
 
 .card{
@@ -160,6 +159,8 @@ location.href="index.html"
 </div>
 
 
+<!-- DASHBOARD -->
+
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
@@ -171,17 +172,14 @@ location.href="index.html"
 
 <br>
 
-<button class="bigBtn" onclick="clearToday()">
-ล้างข้อมูลวันนี้
-</button>
-
-<button class="bigBtn" onclick="clearAll()">
-ล้างทั้งหมดทั้งระบบ
-</button>
+<button class="bigBtn" onclick="clearToday()">ล้างข้อมูลวันนี้</button>
+<button class="bigBtn" onclick="clearAll()">ล้างทั้งหมด</button>
 
 </div>
 
 
+
+<!-- POS -->
 
 <div id="pos" class="page">
 
@@ -189,19 +187,49 @@ location.href="index.html"
 
 <input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
 
+<br>
+
+<button class="bigBtn green" onclick="setType('eat')">
+🍽 ทานที่ร้าน
+</button>
+
+<button class="bigBtn" onclick="setType('back')">
+🥡 กลับบ้าน
+</button>
+
+
+<div id="tableBox"></div>
+
+
+<div class="posGrid">
+
+<div>
+
 <div class="menuGrid">
 
-<button class="menuBtn" onclick="add('Coffee',50)">Coffee</button>
-<button class="menuBtn" onclick="add('Tea',40)">Tea</button>
-<button class="menuBtn" onclick="add('Milk',30)">Milk</button>
-<button class="menuBtn" onclick="add('Cake',70)">Cake</button>
+<button class="menuBtn" onclick="add('Coffee',50)">☕ Coffee</button>
+<button class="menuBtn" onclick="add('Cake',70)">🍰 Cake</button>
+<button class="menuBtn" onclick="add('Tea',40)">🍵 Tea</button>
+<button class="menuBtn" onclick="add('Milk',30)">🥛 Milk</button>
+<button class="menuBtn" onclick="add('Cookie',35)">🍪 Cookie</button>
+<button class="menuBtn" onclick="add('Latte',60)">🥛 Latte</button>
 
 </div>
+
+</div>
+
+
+<div>
 
 <div id="list" class="order"></div>
 <div id="total" class="big"></div>
 
-<button class="bigBtn" onclick="sendOrder()">ส่ง</button>
+<button class="bigBtn" onclick="sendOrder()">ส่งออเดอร์</button>
+<button class="bigBtn" onclick="cancelOrder()">ยกเลิก</button>
+
+</div>
+
+</div>
 
 </div>
 </div>
@@ -212,7 +240,6 @@ location.href="index.html"
 <h2>ค้าง</h2>
 <div id="historyBox"></div>
 </div>
-
 
 
 <div id="done" class="page">
@@ -228,10 +255,32 @@ document.getElementById("staff").innerText =
 localStorage.getItem("staff")
 
 let order={}
-let history=JSON.parse(localStorage.getItem("history"))||[]
-let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
+let table=""
+let type=""
+
+let doneHistory=
+JSON.parse(localStorage.getItem("done"))||[]
 
 let today=new Date().toDateString()
+
+
+
+let tb=document.getElementById("tableBox")
+
+for(let i=1;i<=22;i++){
+
+let b=document.createElement("button")
+
+b.innerText="โต๊ะ "+i
+b.className="tableBtn"
+
+b.onclick=()=>{
+table="โต๊ะ "+i
+}
+
+tb.appendChild(b)
+
+}
 
 
 
@@ -244,7 +293,6 @@ document.getElementById(p)
 .classList.add("active")
 
 updateDash()
-showHistory()
 showDone()
 
 }
@@ -255,6 +303,21 @@ function logout(){
 
 localStorage.clear()
 location.href="index.html"
+
+}
+
+
+
+function setType(t){
+
+type=t
+
+if(t=="eat"){
+tableBox.style.display="grid"
+}else{
+tableBox.style.display="none"
+table=""
+}
 
 }
 
@@ -307,17 +370,16 @@ total+=order[m].qty*order[m].price
 
 let now=new Date()
 
-let data={
+doneHistory.push({
 
+table:table,
 items:JSON.stringify(order),
 total:total,
 dateKey:now.toDateString(),
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
 
-}
-
-doneHistory.push(data)
+})
 
 localStorage.setItem(
 "done",
@@ -328,6 +390,15 @@ order={}
 show()
 
 updateDash()
+
+}
+
+
+
+function cancelOrder(){
+
+order={}
+show()
 
 }
 
@@ -380,14 +451,6 @@ money.innerText=sum
 
 
 
-function showHistory(){
-
-historyBox.innerHTML=""
-
-}
-
-
-
 function showDone(){
 
 let t=""
@@ -395,7 +458,8 @@ let t=""
 doneHistory.forEach(h=>{
 
 t+=
-h.date+
+h.table+
+"<br>"+h.date+
 "<br>"+h.time+
 "<br>รวม "+h.total+
 "<hr>"
@@ -405,7 +469,6 @@ h.date+
 doneBox.innerHTML=t
 
 }
-
 
 
 updateDash()
