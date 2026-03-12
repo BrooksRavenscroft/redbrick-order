@@ -2,70 +2,30 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Login - Redbrick</title>
+<title>Login</title>
 
 <style>
 
 body{
-
 margin:0;
 font-family:Segoe UI;
 background:#f5e6d8;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-
+text-align:center;
 }
-
 
 .box{
-
-background:white;
-padding:30px;
-border-radius:15px;
-text-align:center;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-
+margin-top:100px;
 }
 
-
-.logo{
-
-font-size:40px;
-margin-bottom:10px;
-
-}
-
-
-.title{
-
+button{
 font-size:20px;
-margin-bottom:15px;
-
-}
-
-
-.btn{
-
-display:block;
-width:200px;
-padding:12px;
-margin:8px auto;
+padding:10px 20px;
+margin:10px;
 border:none;
 border-radius:10px;
-font-size:18px;
 background:#cc7a00;
 color:white;
 cursor:pointer;
-
-}
-
-
-.btn:hover{
-
-background:#a65f00;
-
 }
 
 </style>
@@ -73,54 +33,33 @@ background:#a65f00;
 </head>
 <body>
 
-
-
 <div class="box">
 
-<div class="logo">
-☕ Redbrick Cafe
-</div>
+<h1>☕ Redbrick Cafe</h1>
 
-<div class="title">
-เลือกพนักงาน
-</div>
+<h2>เลือกพนักงาน</h2>
 
-
-<button class="btn"
-onclick="login('Brooks')">
-
+<button onclick="login('Brooks')">
 Brooks
-
 </button>
 
-
-<button class="btn"
-onclick="login('Belial Blair')">
-
+<button onclick="login('Belial Blair')">
 Belial Blair
-
 </button>
-
 
 </div>
-
-
 
 <script>
 
 function login(name){
 
-localStorage.setItem(
-"staff",
-name
-)
+localStorage.setItem("staff",name)
 
 location.href="pos.html"
 
 }
 
 </script>
-
 
 </body>
 </html>
