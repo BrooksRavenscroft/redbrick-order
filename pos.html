@@ -285,8 +285,6 @@ let type=""
 let today=new Date().toDateString()
 
 
-/* table */
-
 let tb=document.getElementById("tableBox")
 
 for(let i=1;i<=22;i++){
@@ -302,8 +300,6 @@ tb.appendChild(b)
 
 }
 
-
-/* page */
 
 function page(p){
 
@@ -328,8 +324,6 @@ location.href="index.html"
 }
 
 
-/* type */
-
 function setType(t,btn){
 
 type=t
@@ -349,20 +343,14 @@ table=""
 }
 
 
-/* table toggle */
-
 function selectTable(i,btn){
 
 let t="โต๊ะ "+i
 
 if(table==t){
-
 table=""
-
 btn.classList.remove("tableSelect")
-
 return
-
 }
 
 table=t
@@ -375,8 +363,6 @@ btn.classList.add("tableSelect")
 
 }
 
-
-/* menu */
 
 function add(m,p){
 
@@ -424,12 +410,11 @@ total+=price
 }
 
 list.innerHTML=text
-totalDiv.innerText="รวม "+total+" บาท"
+document.getElementById("total").innerText=
+"รวม "+total+" บาท"
 
 }
 
-
-/* send */
 
 function sendOrder(){
 
@@ -439,15 +424,15 @@ for(let m in order){
 total+=order[m].qty*order[m].price
 }
 
-let time=new Date().toLocaleTimeString()
+let now=new Date()
 
 let data={
 name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
-date:today,
-time:time
+date:now.toLocaleDateString(),
+time:now.toLocaleTimeString()
 }
 
 history.push(data)
@@ -466,8 +451,6 @@ updateDash()
 
 }
 
-
-/* receipt */
 
 function showReceipt(d){
 
@@ -488,6 +471,7 @@ receipt.innerHTML=
 
 "<h3>☕ Receipt</h3>"+
 d.name+" "+d.table+
+"<br>"+d.date+
 "<br>"+d.time+
 "<br><br>"+
 items+
@@ -502,8 +486,6 @@ receipt.style.display="none"
 
 }
 
-
-/* history */
 
 function finish(i){
 
@@ -545,6 +527,7 @@ m+" x"+obj[m].qty+
 
 t+=
 h.name+" "+h.table+
+"<br>"+h.date+
 "<br>"+h.time+
 "<br>"+
 items+
@@ -563,7 +546,14 @@ function showDone(){
 let t=""
 
 doneHistory.forEach(h=>{
-t+=h.name+" "+h.total+" "+h.time+"<hr>"
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>รวม "+h.total+
+"<hr>"
+
 })
 
 doneBox.innerHTML=t
@@ -576,9 +566,7 @@ function updateDash(){
 let sum=0
 
 doneHistory.forEach(h=>{
-if(h.date==today){
 sum+=h.total
-}
 })
 
 money.innerText=sum
