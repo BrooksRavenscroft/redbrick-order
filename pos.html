@@ -572,16 +572,25 @@ doneBox.innerHTML=t
 
 function clearToday(){
 
-doneHistory=
-doneHistory.filter(h=>h.date!==today)
+doneHistory =
+doneHistory.filter(h=>h.date !== today)
+
+history =
+history.filter(h=>h.date !== today)
 
 localStorage.setItem(
 "done",
 JSON.stringify(doneHistory)
 )
 
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
 updateDash()
 showDone()
+showHistory()
 
 }
 
