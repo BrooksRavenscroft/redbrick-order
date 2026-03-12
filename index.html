@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick POS</title>
+<title>Redbrick Coffee Shop</title>
 
 <style>
 
@@ -11,415 +11,107 @@ margin:0;
 font-family:Segoe UI;
 background:url("https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb");
 background-size:cover;
+background-position:center;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 color:white;
+}
+
+/* กล่อง login */
+
+.loginBox{
+
+background:rgba(20,20,20,0.85);
+padding:30px;
+border-radius:15px;
 text-align:center;
+width:350px;
+
+box-shadow:0 0 25px black;
+
 }
 
-.box{
-background:rgba(30,30,30,0.85);
-width:520px;
-margin:auto;
-margin-top:20px;
-padding:20px;
-border-radius:12px;
-box-shadow:0 0 15px black;
-}
+/* โลโก้ */
 
-.logo{
-font-size:28px;
-color:#ff4444;
-}
-
-button{
-padding:8px 12px;
-margin:4px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.menu button{
-background:#444;
-color:white;
-width:100px;
-}
-
-.menu button:hover{
-background:#b30000;
-}
-
-.send{background:#00aa55;color:white;}
-.cancel{background:#cc0000;color:white;}
-.logout{background:#555;color:white;}
-
-.order{
-background:#111;
-padding:10px;
-margin-top:10px;
-text-align:left;
-border-radius:6px;
-}
-
-.history{
-background:#222;
-padding:10px;
-margin-top:10px;
-text-align:left;
-max-height:200px;
-overflow:auto;
-border-radius:6px;
-}
-
-.total{
-color:#00ffaa;
-font-size:18px;
-margin-top:5px;
-}
-
-input,select{
-padding:8px;
-margin:5px;
-border-radius:6px;
-border:none;
-width:90%;
-}
-
-#receipt{
-position:fixed;
-top:20%;
-left:50%;
-transform:translateX(-50%);
-background:white;
-color:black;
-padding:20px;
-width:320px;
-border-radius:10px;
-display:none;
-}
 .logoImg{
-width:180px;
+width:220px;
 margin-bottom:10px;
 }
+
+/* ชื่อร้าน */
+
+.title{
+font-size:26px;
+color:#ff4444;
+margin-bottom:10px;
+}
+
+/* ปุ่ม */
+
+button{
+
+width:100%;
+padding:12px;
+margin-top:10px;
+
+font-size:16px;
+
+border:none;
+border-radius:8px;
+
+background:#b30000;
+color:white;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+button:hover{
+
+background:#ff3333;
+transform:scale(1.05);
+
+}
+
 </style>
 
 </head>
 <body>
 
-<!-- LOGIN -->
 
-<div id="login" class="box">
+<div class="loginBox">
 
 <img src="logo.png" class="logoImg">
 
-<div class="logo">
+<div class="title">
 Redbrick Coffee Shop
 </div>
 
-<button onclick="login('Brooks')">Brooks</button>
-<button onclick="login('Belial Blair')">Belial Blair</button>
+<p>เลือกพนักงาน</p>
 
-</div>
+<button onclick="login('Brooks')">
+Brooks
+</button>
 
-
-<!-- ORDER -->
-
-<div id="orderPage" class="box" style="display:none;">
-
-<img src="logo.png" class="logoImg">
-
-<div class="logo">Redbrick POS</div>
-
-<h3 id="staffName"></h3>
-
-<input id="name" placeholder="ลูกค้า">
-<input id="table" placeholder="โต๊ะ">
-
-<select id="type">
-<option>ทานที่ร้าน</option>
-<option>กลับบ้าน</option>
-</select>
-
-<h3>☕ MENU</h3>
-
-<div class="menu">
-
-<button onclick="add('Coffee',50)">Coffee</button>
-<button onclick="add('Latte',60)">Latte</button>
-<button onclick="add('Cake',70)">Cake</button>
-<button onclick="add('Pasta',120)">Pasta</button>
-<button onclick="add('Steak',250)">Steak</button>
-
-</div>
-
-<h3>📦 ORDER</h3>
-
-<div id="list" class="order"></div>
-
-<div id="total" class="total"></div>
-
-<button class="send" onclick="sendOrder()">ส่ง</button>
-<button class="cancel" onclick="cancelOrder()">ยกเลิก</button>
-<button class="logout" onclick="logout()">Logout</button>
-
-<h3>📜 HISTORY</h3>
-
-<div id="history" class="history"></div>
-
-</div>
-
-
-<!-- RECEIPT -->
-
-<div id="receipt">
-
-<div id="receiptText"></div>
-
-<button onclick="closeReceipt()">
-ปิด
+<button onclick="login('Belial Blair')">
+Belial Blair
 </button>
 
 </div>
+
 
 
 <script>
 
-const WEBHOOK="ใส่ webhook"
-
-let staff=""
-let order={}
-let history = JSON.parse(localStorage.getItem("history")) || []
-
-
 function login(name){
 
-staff=name
+localStorage.setItem("staff",name)
 
-document.getElementById("login").style.display="none"
-document.getElementById("orderPage").style.display="block"
-
-document.getElementById("staffName").innerText="พนักงาน: "+staff
-
-showHistory()
-
-}
-
-
-function logout(){
-
-staff=""
-order={}
-
-document.getElementById("orderPage").style.display="none"
-document.getElementById("login").style.display="block"
-
-show()
-
-}
-
-
-function add(menu,price){
-
-if(order[menu]){
-
-order[menu].qty++
-
-}else{
-
-order[menu]={qty:1,price:price}
-
-}
-
-show()
-
-}
-
-
-function plus(menu){
-
-order[menu].qty++
-show()
-
-}
-
-
-function minus(menu){
-
-order[menu].qty--
-
-if(order[menu].qty<=0){
-
-delete order[menu]
-
-}
-
-show()
-
-}
-
-
-function cancelOrder(){
-
-order={}
-show()
-
-}
-
-
-function show(){
-
-let html=""
-let total=0
-
-for(let m in order){
-
-let q=order[m].qty
-let p=order[m].price
-
-html+=`
-${m}
-<button onclick="minus('${m}')">-</button>
-${q}
-<button onclick="plus('${m}')">+</button>
-= ${q*p}
-<br>
-`
-
-total+=q*p
-
-}
-
-document.getElementById("list").innerHTML=html
-document.getElementById("total").innerText="รวม "+total+" บาท"
-
-}
-
-
-async function sendOrder(){
-
-const name=document.getElementById("name").value
-const table=document.getElementById("table").value
-const type=document.getElementById("type").value
-
-let text=""
-let total=0
-
-for(let m in order){
-
-let q=order[m].qty
-let p=order[m].price
-
-text+=m+" x"+q+" = "+(q*p)+"\n"
-
-total+=q*p
-
-}
-
-
-await fetch(WEBHOOK,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-content:
-`📦 ORDER
-👨‍🍳 ${staff}
-👤 ${name}
-🪑 ${table}
-📌 ${type}
-
-${text}
-
-รวม ${total}`
-})
-})
-
-
-let receiptText = `
-Redbrick Coffee Shop
-
-${name}
-โต๊ะ ${table}
-${type}
-
-${text}
-
-รวม ${total}
-`
-
-history.push({text:receiptText})
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-showReceipt(receiptText)
-
-showHistory()
-
-order={}
-show()
-
-}
-
-
-function showHistory(){
-
-let t=""
-
-history.forEach((h,i)=>{
-
-t+=`
-${h.text}
-
-<button onclick="finish(${i})">
-เสร็จสิ้น
-</button>
-
-<hr>
-`
-
-})
-
-document.getElementById("history").innerHTML=t
-
-}
-
-
-function finish(i){
-
-history.splice(i,1)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-showHistory()
-
-}
-
-
-function showReceipt(text){
-
-document.getElementById(
-"receiptText"
-).innerText=text
-
-document.getElementById(
-"receipt"
-).style.display="block"
-
-}
-
-
-function closeReceipt(){
-
-document.getElementById(
-"receipt"
-).style.display="none"
+window.location="pos.html"
 
 }
 
