@@ -2,183 +2,135 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick Cafe</title>
+<title>Redbrick Cafe System</title>
 
 <style>
 
 body{
-
 margin:0;
 font-family:Segoe UI;
-background:#2b1d14;
-color:#fff3e6;
-
+background:#f5e6d8;
+color:#3b2b20;
 }
 
 /* TOP */
 
-.top{
+.topbar{
 
-background:#3b261a;
+background:#6b4b3a;
+color:white;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
 
 padding:10px;
 
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
 }
 
-.menu button{
+.menuTop button{
 
-background:#5a3a29;
-
-color:white;
-
+background:#d9a066;
 border:none;
-
 padding:8px 12px;
-
 margin:2px;
-
-border-radius:6px;
-
+border-radius:8px;
 cursor:pointer;
 
 }
 
-.menu button:hover{
-
-background:#8b5a3c;
-
+.menuTop button:hover{
+background:#b97a45;
 }
 
 .staff{
-
-color:#ffd699;
-
+font-weight:bold;
 }
 
-/* page */
+/* LOGO */
+
+.logoBox{
+text-align:center;
+margin:10px;
+}
+
+.logo{
+width:140px;
+}
+
+/* PAGE */
 
 .page{
-
 display:none;
-
 padding:15px;
-
 }
 
 .active{
-
 display:block;
-
 }
 
-/* card */
+/* CARD */
 
 .card{
-
-background:#4a2f21;
-
+background:white;
+border-radius:12px;
 padding:15px;
-
-border-radius:10px;
-
 width:200px;
-
 display:inline-block;
-
 margin:10px;
-
 text-align:center;
-
+box-shadow:0 2px 5px rgba(0,0,0,0.2);
 }
 
 .big{
-
 font-size:28px;
-
-color:#ffcc99;
-
+color:#cc7a00;
 }
 
 /* POS */
 
 .box{
-
-background:#3b261a;
-
+background:white;
 padding:15px;
-
-border-radius:10px;
-
+border-radius:12px;
 max-width:900px;
-
 margin:auto;
-
+box-shadow:0 3px 6px rgba(0,0,0,0.2);
 }
 
 .menuGrid{
-
 display:grid;
-
 grid-template-columns:repeat(3,1fr);
-
 gap:10px;
-
 }
 
-.menuGrid button{
-
-height:70px;
-
-background:#6b442d;
-
-color:white;
-
+.menuBtn{
+background:#ffe0c2;
 border:none;
-
-border-radius:10px;
-
-font-size:16px;
-
+border-radius:12px;
+padding:5px;
+cursor:pointer;
 }
 
-.menuGrid button:hover{
-
-background:#a66b47;
-
+.menuBtn img{
+width:60px;
+height:60px;
 }
 
 .order{
-
-background:#1a120c;
-
+background:#f2e2d2;
 padding:10px;
-
 margin-top:10px;
-
 }
 
 .bigBtn{
-
 background:#cc7a00;
-
 border:none;
-
 padding:10px;
-
 margin-top:5px;
-
 color:white;
-
 border-radius:8px;
-
 cursor:pointer;
-
 }
 
 /* receipt */
@@ -186,53 +138,25 @@ cursor:pointer;
 #receipt{
 
 position:fixed;
-
 top:50%;
-
 left:50%;
-
 transform:translate(-50%,-50%);
-
-background:#fff8f0;
-
-color:black;
-
+background:white;
 padding:20px;
-
 border-radius:10px;
-
 display:none;
-
-font-family:monospace;
+text-align:center;
 
 }
 
 </style>
-.logoBox{
-
-text-align:center;
-margin-top:10px;
-
-}
-
-.logo{
-
-width:120px;
-
-}
-
 </head>
 <body>
 
 
+<div class="topbar">
 
-<div class="top">
-<div class="logoBox">
-
-<img src="logo.png" class="logo">
-
-</div>
-<div class="menu">
+<div class="menuTop">
 
 <button onclick="page('home')">หน้าแรก</button>
 <button onclick="page('pos')">POS</button>
@@ -248,35 +172,27 @@ width:120px;
 
 
 <!-- HOME -->
-<center>
 
-<img src="logo.png" class="logo">
-
-</center>
 <div id="home" class="page active">
 
-<div class="card">
-
-ออเดอร์ค้าง
-
-<div id="count" class="big">0</div>
-
+<div class="logoBox">
+<img src="logo.png" class="logo">
 </div>
 
 <div class="card">
+ออเดอร์ค้าง
+<div id="count" class="big">0</div>
+</div>
 
+<div class="card">
 เงินวันนี้
-
 <div id="money" class="big">0</div>
-
 </div>
 
 <br>
 
 <button class="bigBtn" onclick="resetDay()">
-
-ล้างวันนี้
-
+ล้างข้อมูลวันนี้
 </button>
 
 </div>
@@ -287,33 +203,57 @@ width:120px;
 
 <div id="pos" class="page">
 
+<div class="logoBox">
+<img src="logo.png" class="logo">
+</div>
+
 <div class="box">
 
 <input id="customer" placeholder="ลูกค้า">
 
 <select id="type" onchange="checkType()">
-
 <option>ทานที่ร้าน</option>
 <option>กลับบ้าน</option>
-
 </select>
 
 <select id="table">
-
 <option>โต๊ะ1</option>
 <option>โต๊ะ2</option>
 <option>โต๊ะ3</option>
-
 </select>
 
 
 <div class="menuGrid">
 
-<button onclick="add('Coffee',50)">Coffee</button>
-<button onclick="add('Latte',60)">Latte</button>
-<button onclick="add('Cake',70)">Cake</button>
-<button onclick="add('Tea',40)">Tea</button>
-<button onclick="add('Milk',30)">Milk</button>
+<button class="menuBtn"
+onclick="add('Coffee',50)">
+<img src="coffee.png"><br>
+Coffee
+</button>
+
+<button class="menuBtn"
+onclick="add('Latte',60)">
+<img src="latte.png"><br>
+Latte
+</button>
+
+<button class="menuBtn"
+onclick="add('Cake',70)">
+<img src="cake.png"><br>
+Cake
+</button>
+
+<button class="menuBtn"
+onclick="add('Tea',40)">
+<img src="tea.png"><br>
+Tea
+</button>
+
+<button class="menuBtn"
+onclick="add('Milk',30)">
+<img src="milk.png"><br>
+Milk
+</button>
 
 </div>
 
@@ -322,10 +262,9 @@ width:120px;
 
 <div id="total"></div>
 
-<button class="bigBtn" onclick="sendOrder()">
-
-ส่ง
-
+<button class="bigBtn"
+onclick="sendOrder()">
+ส่งออเดอร์
 </button>
 
 </div>
@@ -338,7 +277,9 @@ width:120px;
 
 <div id="history" class="page">
 
-<h3>ออเดอร์ค้าง</h3>
+<div class="logoBox">
+<img src="logo.png" class="logo">
+</div>
 
 <div id="historyBox"></div>
 
@@ -346,11 +287,13 @@ width:120px;
 
 
 
-<!-- เสร็จแล้ว -->
+<!-- ย้อนหลัง -->
 
 <div id="done" class="page">
 
-<h3>ย้อนหลัง</h3>
+<div class="logoBox">
+<img src="logo.png" class="logo">
+</div>
 
 <div id="doneBox"></div>
 
@@ -364,21 +307,14 @@ width:120px;
 
 <script>
 
-const WEBHOOK="ใส่ลิงค์"
-
 let staff=localStorage.getItem("staff")
-
 document.getElementById("staff").innerText=staff
 
-
 let order={}
-
 let history=
-
 JSON.parse(localStorage.getItem("history"))||[]
 
 let doneHistory=
-
 JSON.parse(localStorage.getItem("done"))||[]
 
 
@@ -386,15 +322,13 @@ JSON.parse(localStorage.getItem("done"))||[]
 function page(p){
 
 document.querySelectorAll(".page")
-
 .forEach(e=>e.classList.remove("active"))
 
-document.getElementById(p).classList.add("active")
+document.getElementById(p)
+.classList.add("active")
 
 updateDash()
-
 showHistory()
-
 showDone()
 
 }
@@ -403,11 +337,13 @@ showDone()
 
 function checkType(){
 
-let t=document.getElementById("type").value
+let t=
+document.getElementById("type").value
 
 document.getElementById("table").style.display=
-
-t=="ทานที่ร้าน"?"inline":"none"
+t=="ทานที่ร้าน"
+?"inline"
+:"none"
 
 }
 
@@ -439,7 +375,6 @@ let total=0
 for(let m in order){
 
 let q=order[m].qty
-
 let p=order[m].price
 
 text+=m+" x"+q+"<br>"
@@ -449,7 +384,6 @@ total+=q*p
 }
 
 document.getElementById("list").innerHTML=text
-
 document.getElementById("total").innerText="รวม "+total
 
 }
@@ -458,20 +392,21 @@ document.getElementById("total").innerText="รวม "+total
 
 function sendOrder(){
 
-let name=document.getElementById("customer").value
+let name=
+document.getElementById("customer").value
 
-let type=document.getElementById("type").value
+let type=
+document.getElementById("type").value
 
-let table=document.getElementById("table").value
+let table=
+document.getElementById("table").value
 
 let total=0
-
 let text=""
 
 for(let m in order){
 
 let q=order[m].qty
-
 let p=order[m].price
 
 text+=m+" x"+q+"\n"
@@ -480,47 +415,31 @@ total+=q*p
 
 }
 
-
 let full=
-
 name+"\n"+
-
 type+"\n"+
-
 table+"\n"+
-
 text+
-
 "รวม "+total
 
 
 history.push({
-
 text:full,
-
 total:total
-
 })
 
 localStorage.setItem(
-
 "history",
-
 JSON.stringify(history)
-
 )
 
-
 receipt(full)
-
-discord(full)
 
 order={}
 
 show()
 
 updateDash()
-
 showHistory()
 
 }
@@ -533,18 +452,16 @@ doneHistory.push(history[i])
 
 history.splice(i,1)
 
-localStorage.setItem("history",
-
+localStorage.setItem(
+"history",
 JSON.stringify(history))
 
-localStorage.setItem("done",
-
+localStorage.setItem(
+"done",
 JSON.stringify(doneHistory))
 
 showHistory()
-
 showDone()
-
 updateDash()
 
 }
@@ -558,9 +475,7 @@ let t=""
 history.forEach((h,i)=>{
 
 t+=
-
 h.text+
-
 ` <button onclick="finish(${i})">เสร็จ</button><hr>`
 
 })
@@ -592,17 +507,13 @@ function updateDash(){
 let money=0
 
 history.forEach(h=>{
-
 money+=h.total
-
 })
 
 document.getElementById("count").innerText=
-
 history.length
 
 document.getElementById("money").innerText=
-
 money
 
 }
@@ -616,7 +527,6 @@ history=[]
 localStorage.setItem("history","[]")
 
 updateDash()
-
 showHistory()
 
 }
@@ -625,22 +535,19 @@ showHistory()
 
 function receipt(t){
 
-let r=document.getElementById("receipt")
+let r=
+document.getElementById("receipt")
 
 r.style.display="block"
 
-r.innerHTML=`
+r.innerHTML=
 
-<img src="logo.png" style="width:100px">
-
+`
+<img src="logo.png" style="width:120px">
 <hr>
-
 ${t}
-
 <hr>
-
 Redbrick Coffee Shop
-
 `
 
 setTimeout(()=>{
@@ -652,34 +559,9 @@ r.style.display="none"
 }
 
 
-function discord(msg){
-
-fetch(WEBHOOK,{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json"
-
-},
-
-body:JSON.stringify({
-
-content:msg
-
-})
-
-})
-
-}
-
-
 
 updateDash()
-
 showHistory()
-
 showDone()
 
 </script>
