@@ -119,19 +119,6 @@ padding:10px;
 margin-top:10px;
 }
 
-#receipt{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-padding:20px;
-border-radius:12px;
-display:none;
-box-shadow:0 0 20px #0005;
-width:300px;
-}
-
 .card{
 background:white;
 padding:15px;
@@ -143,6 +130,19 @@ border-radius:10px;
 .big{
 font-size:25px;
 color:#cc7a00;
+}
+
+#receipt{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px;
+border-radius:12px;
+display:none;
+box-shadow:0 0 20px #0005;
+width:300px;
 }
 
 </style>
@@ -173,6 +173,7 @@ location.href="index.html"
 </div>
 
 
+
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
@@ -196,24 +197,19 @@ location.href="index.html"
 
 <div class="centerBox">
 
-<input id="customer"
-class="bigInput"
-placeholder="ชื่อลูกค้า">
+<input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
 
 <br>
 
-<button id="eatBtn"
-class="bigBtn"
+<button id="eatBtn" class="bigBtn"
 onclick="setType('eat',this)">
 🍽 ทานที่ร้าน
 </button>
 
-<button id="backBtn"
-class="bigBtn"
+<button id="backBtn" class="bigBtn"
 onclick="setType('back',this)">
 🥡 กลับบ้าน
 </button>
-
 
 <div class="posGrid">
 
@@ -238,18 +234,10 @@ onclick="setType('back',this)">
 <div>
 
 <div id="list" class="order"></div>
-
 <div id="total" class="big"></div>
 
-<button class="bigBtn"
-onclick="sendOrder()">
-ส่งออเดอร์
-</button>
-
-<button class="bigBtn"
-onclick="cancelOrder()">
-ยกเลิก
-</button>
+<button class="bigBtn" onclick="sendOrder()">ส่งออเดอร์</button>
+<button class="bigBtn" onclick="cancelOrder()">ยกเลิก</button>
 
 </div>
 
@@ -279,7 +267,7 @@ onclick="cancelOrder()">
 
 <script>
 
-document.getElementById("staff").innerText=
+document.getElementById("staff").innerText =
 localStorage.getItem("staff")
 
 let order={}
@@ -288,8 +276,8 @@ let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
-
 let today=new Date().toLocaleDateString()
+
 
 
 let tb=document.getElementById("tableBox")
@@ -297,7 +285,6 @@ let tb=document.getElementById("tableBox")
 for(let i=1;i<=22;i++){
 
 let b=document.createElement("button")
-
 b.innerText="โต๊ะ "+i
 b.className="tableBtn"
 
@@ -308,9 +295,284 @@ tb.appendChild(b)
 }
 
 
+
+function page(p){
+
+document.querySelectorAll(".page")
+.forEach(e=>e.classList.remove("active"))
+
+document.getElementById(p)
+.classList.add("active")
+
+updateDash()
+showHistory()
+showDone()
+
+}
+
+
+
+function logout(){
+
+localStorage.removeItem("staff")
+location.href="index.html"
+
+}
+
+
+
+function setType(t,btn){
+
+type=t
+
+eatBtn.classList.remove("selected")
+backBtn.classList.remove("selected")
+
+btn.classList.add("selected")
+
+if(t=="eat"){
+tableBox.style.display="grid"
+}else{
+tableBox.style.display="none"
+table=""
+}
+
+}
+
+
+
+function selectTable(i,btn){
+
+let t="โต๊ะ "+i
+
+if(table==t){
+table=""
+btn.classList.remove("tableSelect")
+return
+}
+
+table=t
+
+document.querySelectorAll(".tableBtn")
+.forEach(b=>b.classList.remove("tableSelect"))
+
+btn.classList.add("tableSelect")
+
+}
+
+
+
+function add(m,p){
+
+if(order[m]){
+order[m].qty++
+}else{
+order[m]={qty:1,price:p}
+}
+
+show()
+
+}
+
+
+
+function minus(m){
+
+order[m].qty--
+
+if(order[m].qty<=0){
+delete order[m]
+}
+
+show()
+
+}
+
+
+
+function show(){
+
+let text=""
+let total=0
+
+for(let m in order){
+
+let q=order[m].qty
+let price=q*order[m].price
+
+text+=
+m+" x"+q+
+" = "+price+
+` <button onclick="minus('${m}')">-</button><br>`
+
+total+=price
+
+}
+
+list.innerHTML=text
+totalBox=document.getElementById("total")
+totalBox.innerText="รวม "+total+" บาท"
+
+}
+
+
+
+function sendOrder(){
+
+let total=0
+
+for(let m in order){
+total+=order[m].qty*order[m].price
+}
+
+let now=new Date()
+
+let data={
+name:customer.value,
+table:table,
+items:JSON.stringify(order),
+total:total,
+date:now.toLocaleDateString(),
+time:now.toLocaleTimeString()
+}
+
+history.push(data)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+showReceipt(data)
+
+order={}
+show()
+
+updateDash()
+
+}
+
+
+
+function showReceipt(d){
+
+let obj=JSON.parse(d.items)
+
+let items=""
+
+for(let m in obj){
+
+items+=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
+
+}
+
+receipt.innerHTML=
+
+"<h3>Receipt</h3>"+
+d.name+" "+d.table+
+"<br>"+d.date+
+"<br>"+d.time+
+"<br><br>"+
+items+
+"<hr>"+
+"รวม "+d.total
+
+receipt.style.display="block"
+
+setTimeout(()=>{
+receipt.style.display="none"
+},2500)
+
+}
+
+
+
+function finish(i){
+
+doneHistory.push(history[i])
+history.splice(i,1)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+showHistory()
+showDone()
+updateDash()
+
+}
+
+
+
+function showHistory(){
+
+let t=""
+
+history.forEach((h,i)=>{
+
+let obj=JSON.parse(h.items)
+
+let items=""
+
+for(let m in obj){
+
+items+=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
+
+}
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>"+
+items+
+"<b>รวม "+h.total+"</b>"+
+`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
+
+})
+
+historyBox.innerHTML=t
+
+}
+
+
+
+function showDone(){
+
+let t=""
+
+doneHistory.forEach(h=>{
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>รวม "+h.total+
+"<hr>"
+
+})
+
+doneBox.innerHTML=t
+
+}
+
+
+
 function clearToday(){
 
-doneHistory =
+doneHistory=
 doneHistory.filter(h=>h.date!==today)
 
 localStorage.setItem(
@@ -324,18 +586,27 @@ showDone()
 }
 
 
+
 function updateDash(){
 
 let sum=0
 
 doneHistory.forEach(h=>{
-
 if(h.date===today){
 sum+=h.total
 }
-
 })
 
 money.innerText=sum
 
 }
+
+
+updateDash()
+showHistory()
+showDone()
+
+</script>
+
+</body>
+</html>
