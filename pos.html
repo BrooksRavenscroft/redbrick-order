@@ -173,7 +173,6 @@ location.href="index.html"
 </div>
 
 
-
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
@@ -264,7 +263,6 @@ onclick="setType('back',this)">
 <div id="receipt"></div>
 
 
-
 <script>
 
 document.getElementById("staff").innerText =
@@ -276,7 +274,9 @@ let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
-let today=new Date().toLocaleDateString()
+
+let todayKey =
+new Date().toDateString()
 
 
 
@@ -285,6 +285,7 @@ let tb=document.getElementById("tableBox")
 for(let i=1;i<=22;i++){
 
 let b=document.createElement("button")
+
 b.innerText="โต๊ะ "+i
 b.className="tableBtn"
 
@@ -410,7 +411,6 @@ total+=price
 }
 
 list.innerHTML=text
-totalBox=document.getElementById("total")
 totalBox.innerText="รวม "+total+" บาท"
 
 }
@@ -428,12 +428,16 @@ total+=order[m].qty*order[m].price
 let now=new Date()
 
 let data={
+
 name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
+
+dateKey:now.toDateString(),
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
+
 }
 
 history.push(data)
@@ -449,42 +453,6 @@ order={}
 show()
 
 updateDash()
-
-}
-
-
-
-function showReceipt(d){
-
-let obj=JSON.parse(d.items)
-
-let items=""
-
-for(let m in obj){
-
-items+=
-m+" x"+obj[m].qty+
-" = "+
-(obj[m].qty*obj[m].price)+"<br>"
-
-}
-
-receipt.innerHTML=
-
-"<h3>Receipt</h3>"+
-d.name+" "+d.table+
-"<br>"+d.date+
-"<br>"+d.time+
-"<br><br>"+
-items+
-"<hr>"+
-"รวม "+d.total
-
-receipt.style.display="block"
-
-setTimeout(()=>{
-receipt.style.display="none"
-},2500)
 
 }
 
@@ -513,6 +481,48 @@ updateDash()
 
 
 
+function clearToday(){
+
+history =
+history.filter(h=>h.dateKey!==todayKey)
+
+doneHistory =
+doneHistory.filter(h=>h.dateKey!==todayKey)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+updateDash()
+showHistory()
+showDone()
+
+}
+
+
+
+function updateDash(){
+
+let sum=0
+
+doneHistory.forEach(h=>{
+if(h.dateKey===todayKey){
+sum+=h.total
+}
+})
+
+money.innerText=sum
+
+}
+
+
+
 function showHistory(){
 
 let t=""
@@ -536,8 +546,7 @@ t+=
 h.name+" "+h.table+
 "<br>"+h.date+
 "<br>"+h.time+
-"<br>"+
-items+
+"<br>"+items+
 "<b>รวม "+h.total+"</b>"+
 `<br><button onclick="finish(${i})">เสร็จ</button><hr>`
 
@@ -565,48 +574,6 @@ h.name+" "+h.table+
 })
 
 doneBox.innerHTML=t
-
-}
-
-
-
-function clearToday(){
-
-doneHistory =
-doneHistory.filter(h=>h.date !== today)
-
-history =
-history.filter(h=>h.date !== today)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-updateDash()
-showDone()
-showHistory()
-
-}
-
-
-
-function updateDash(){
-
-let sum=0
-
-doneHistory.forEach(h=>{
-if(h.date===today){
-sum+=h.total
-}
-})
-
-money.innerText=sum
 
 }
 
