@@ -410,8 +410,9 @@ total+=price
 }
 
 list.innerHTML=text
-totalBox=document.getElementById("total")
-totalBox.innerText="รวม "+total+" บาท"
+
+document.getElementById("total").innerText=
+"รวม "+total+" บาท"
 
 }
 
@@ -428,12 +429,14 @@ total+=order[m].qty*order[m].price
 let now=new Date()
 
 let data={
+
 name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
+
 }
 
 history.push(data)
@@ -471,20 +474,19 @@ m+" x"+obj[m].qty+
 
 receipt.innerHTML=
 
-"<h3>Receipt</h3>"+
+"<h3>ใบเสร็จ</h3>"+
 d.name+" "+d.table+
-"<br>"+d.date+
-"<br>"+d.time+
-"<br><br>"+
+"<br>"+d.date+" "+d.time+
+"<hr>"+
 items+
 "<hr>"+
-"รวม "+d.total
+"<b>รวม "+d.total+" บาท</b>"
 
 receipt.style.display="block"
 
 setTimeout(()=>{
 receipt.style.display="none"
-},2500)
+},3000)
 
 }
 
@@ -536,8 +538,7 @@ t+=
 h.name+" "+h.table+
 "<br>"+h.date+
 "<br>"+h.time+
-"<br>"+
-items+
+"<br>"+items+
 "<b>รวม "+h.total+"</b>"+
 `<br><button onclick="finish(${i})">เสร็จ</button><hr>`
 
