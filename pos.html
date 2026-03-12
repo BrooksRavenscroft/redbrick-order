@@ -142,7 +142,7 @@ padding:20px;
 border-radius:12px;
 display:none;
 box-shadow:0 0 20px #0005;
-width:300px;
+width:320px;
 }
 
 </style>
@@ -297,100 +297,6 @@ tb.appendChild(b)
 
 
 
-function page(p){
-
-document.querySelectorAll(".page")
-.forEach(e=>e.classList.remove("active"))
-
-document.getElementById(p)
-.classList.add("active")
-
-updateDash()
-showHistory()
-showDone()
-
-}
-
-
-
-function logout(){
-
-localStorage.removeItem("staff")
-location.href="index.html"
-
-}
-
-
-
-function setType(t,btn){
-
-type=t
-
-eatBtn.classList.remove("selected")
-backBtn.classList.remove("selected")
-
-btn.classList.add("selected")
-
-if(t=="eat"){
-tableBox.style.display="grid"
-}else{
-tableBox.style.display="none"
-table=""
-}
-
-}
-
-
-
-function selectTable(i,btn){
-
-let t="โต๊ะ "+i
-
-if(table==t){
-table=""
-btn.classList.remove("tableSelect")
-return
-}
-
-table=t
-
-document.querySelectorAll(".tableBtn")
-.forEach(b=>b.classList.remove("tableSelect"))
-
-btn.classList.add("tableSelect")
-
-}
-
-
-
-function add(m,p){
-
-if(order[m]){
-order[m].qty++
-}else{
-order[m]={qty:1,price:p}
-}
-
-show()
-
-}
-
-
-
-function minus(m){
-
-order[m].qty--
-
-if(order[m].qty<=0){
-delete order[m]
-}
-
-show()
-
-}
-
-
-
 function show(){
 
 let text=""
@@ -458,66 +364,31 @@ updateDash()
 
 
 
-function finish(i){
+function showReceipt(d){
 
-doneHistory.push(history[i])
-history.splice(i,1)
+let obj=JSON.parse(d.items)
 
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
+let items=""
 
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
+for(let m in obj){
 
-showHistory()
-showDone()
-updateDash()
+items+=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
 
 }
 
+receipt.innerHTML=
 
+"วันที่: "+d.date+
+"<br>เวลา: "+d.time+
+"<hr>"+
+items+
+"<hr>รวม "+d.total+
+"<br><br><button onclick='receipt.style.display=\"none\"'>ปิด</button>"
 
-function clearToday(){
-
-history =
-history.filter(h=>h.dateKey!==todayKey)
-
-doneHistory =
-doneHistory.filter(h=>h.dateKey!==todayKey)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-updateDash()
-showHistory()
-showDone()
-
-}
-
-
-
-function updateDash(){
-
-let sum=0
-
-doneHistory.forEach(h=>{
-if(h.dateKey===todayKey){
-sum+=h.total
-}
-})
-
-money.innerText=sum
+receipt.style.display="block"
 
 }
 
@@ -555,34 +426,3 @@ h.name+" "+h.table+
 historyBox.innerHTML=t
 
 }
-
-
-
-function showDone(){
-
-let t=""
-
-doneHistory.forEach(h=>{
-
-t+=
-h.name+" "+h.table+
-"<br>"+h.date+
-"<br>"+h.time+
-"<br>รวม "+h.total+
-"<hr>"
-
-})
-
-doneBox.innerHTML=t
-
-}
-
-
-updateDash()
-showHistory()
-showDone()
-
-</script>
-
-</body>
-</html>
