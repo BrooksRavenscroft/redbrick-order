@@ -2,100 +2,234 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick System</title>
+<title>Redbrick Cafe System</title>
 
 <style>
 
 body{
+
 margin:0;
 font-family:Segoe UI;
-background:#1e1e1e;
+background:#141414;
 color:white;
+
 }
 
-/* TOP */
+/* TOP BAR */
 
-.topbar{
-background:#111;
+.top{
+
+background:#0d0d0d;
+
 padding:10px;
+
 display:flex;
+
 justify-content:space-between;
-}
 
-.menuTop button{
-margin:3px;
-padding:6px;
-background:#333;
-color:white;
-border:none;
-}
+align-items:center;
 
-.staff{
-color:#00ffaa;
-}
+border-bottom:2px solid #b30000;
 
-/* page */
-
-.page{
-display:none;
-padding:20px;
-}
-
-.active{
-display:block;
-}
-
-/* dashboard */
-
-.card{
-background:#2b2b2b;
-padding:20px;
-border-radius:10px;
-width:200px;
-display:inline-block;
-margin:10px;
-}
-
-.big{
-font-size:30px;
-}
-
-/* pos */
-
-.box{
-background:#2b2b2b;
-padding:20px;
-width:500px;
-margin:auto;
 }
 
 .menu button{
-margin:5px;
-padding:8px;
+
+background:#222;
+
+color:white;
+
+border:none;
+
+padding:8px 14px;
+
+margin-right:5px;
+
+font-size:14px;
+
+cursor:pointer;
+
 }
 
-.order{
-background:#111;
-padding:10px;
+.menu button:hover{
+
+background:#b30000;
+
+}
+
+.staff{
+
+color:#00ffaa;
+
+font-weight:bold;
+
+}
+
+/* PAGE */
+
+.page{
+
+display:none;
+
+padding:20px;
+
+}
+
+.active{
+
+display:block;
+
+}
+
+/* DASHBOARD */
+
+.card{
+
+background:#1f1f1f;
+
+border:1px solid #333;
+
+border-radius:10px;
+
+padding:20px;
+
+width:220px;
+
+display:inline-block;
+
+margin:10px;
+
+}
+
+.big{
+
+font-size:30px;
+
+color:#00ffaa;
+
+}
+
+/* POS */
+
+.posBox{
+
+background:#1c1c1c;
+
+padding:15px;
+
+border-radius:10px;
+
+max-width:900px;
+
+margin:auto;
+
+}
+
+/* MENU BUTTON */
+
+.menuGrid{
+
+display:grid;
+
+grid-template-columns:repeat(3,1fr);
+
+gap:10px;
+
 margin-top:10px;
+
 }
 
-/* receipt */
+.menuGrid button{
+
+height:70px;
+
+font-size:16px;
+
+background:#2b2b2b;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+.menuGrid button:hover{
+
+background:#b30000;
+
+}
+
+/* ORDER */
+
+.orderBox{
+
+background:#111;
+
+padding:10px;
+
+margin-top:10px;
+
+min-height:80px;
+
+}
+
+.total{
+
+font-size:20px;
+
+margin-top:5px;
+
+}
+
+/* RECEIPT */
 
 #receipt{
 
 position:fixed;
+
 top:50%;
+
 left:50%;
 
 transform:translate(-50%,-50%);
 
 background:white;
+
 color:black;
 
 padding:20px;
 
+width:300px;
+
 display:none;
+
+border-radius:10px;
+
+font-family:monospace;
+
+}
+
+/* BUTTON */
+
+.bigBtn{
+
+padding:10px;
+
+font-size:16px;
+
+background:#b30000;
+
+color:white;
+
+border:none;
+
+margin-top:5px;
+
+cursor:pointer;
 
 }
 
@@ -105,17 +239,18 @@ display:none;
 <body>
 
 
-<div class="topbar">
 
-<div class="menuTop">
+<div class="top">
 
-<button onclick="showPage('home')">หน้าแรก</button>
-<button onclick="showPage('pos')">POS</button>
-<button onclick="showPage('history')">ออเดอร์</button>
+<div class="menu">
+
+<button onclick="page('home')">หน้าแรก</button>
+<button onclick="page('pos')">POS</button>
+<button onclick="page('history')">ออเดอร์</button>
 
 </div>
 
-<div id="staffName"></div>
+<div id="staff" class="staff"></div>
 
 </div>
 
@@ -128,19 +263,27 @@ display:none;
 <h2>Dashboard</h2>
 
 <div class="card">
-ออเดอร์วันนี้
-<div id="orderCount" class="big">0</div>
+
+ออเดอร์
+
+<div id="count" class="big">0</div>
+
 </div>
 
 <div class="card">
-รายได้
+
+เงิน
+
 <div id="money" class="big">0</div>
+
 </div>
 
 <br>
 
-<button onclick="resetDay()">
+<button class="bigBtn" onclick="resetDay()">
+
 ล้างข้อมูลวันนี้
+
 </button>
 
 </div>
@@ -151,39 +294,45 @@ display:none;
 
 <div id="pos" class="page">
 
-<div class="box">
+<div class="posBox">
 
-<input id="customer" placeholder="ชื่อลูกค้า">
+<input id="customer" placeholder="ลูกค้า">
 
 <select id="type" onchange="checkType()">
+
 <option>ทานที่ร้าน</option>
 <option>กลับบ้าน</option>
+
 </select>
 
 <select id="table">
+
 <option>โต๊ะ1</option>
 <option>โต๊ะ2</option>
 <option>โต๊ะ3</option>
-<option>โต๊ะ4</option>
+
 </select>
 
 
-<h3>MENU</h3>
-
-<div class="menu">
+<div class="menuGrid">
 
 <button onclick="add('Coffee',50)">Coffee</button>
 <button onclick="add('Latte',60)">Latte</button>
 <button onclick="add('Cake',70)">Cake</button>
+<button onclick="add('Tea',40)">Tea</button>
+<button onclick="add('Milk',30)">Milk</button>
 
 </div>
 
-<div id="list" class="order"></div>
 
-<div id="total"></div>
+<div id="list" class="orderBox"></div>
 
-<button onclick="sendOrder()">
+<div id="total" class="total"></div>
+
+<button class="bigBtn" onclick="sendOrder()">
+
 ส่งออเดอร์
+
 </button>
 
 </div>
@@ -196,7 +345,7 @@ display:none;
 
 <div id="history" class="page">
 
-<h2>รายการ</h2>
+<h2>ออเดอร์</h2>
 
 <div id="historyBox"></div>
 
@@ -208,49 +357,72 @@ display:none;
 
 
 
+<audio id="click">
+
+<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b4c4c.mp3">
+
+</audio>
+
+
+
 <script>
 
-const WEBHOOK = "ใส่ลิงค์"
+const WEBHOOK="ใส่ลิงค์"
 
-let staff = localStorage.getItem("staff")
-document.getElementById("staffName").innerText=staff
+let staff=localStorage.getItem("staff")
+
+document.getElementById("staff").innerText=staff
+
 
 let order={}
 
-let history =
-JSON.parse(localStorage.getItem("history"))
-|| []
+let history=
+
+JSON.parse(localStorage.getItem("history"))||[]
 
 
 
-function showPage(p){
+function sound(){
+
+document.getElementById("click").play()
+
+}
+
+
+
+function page(p){
 
 document.querySelectorAll(".page")
+
 .forEach(e=>e.classList.remove("active"))
 
-document.getElementById(p)
-.classList.add("active")
+document.getElementById(p).classList.add("active")
 
 updateDash()
+
 showHistory()
 
 }
 
 
+
 function checkType(){
 
-let t =
+let t=
+
 document.getElementById("type").value
 
-document.getElementById("table").style.display =
-t=="ทานที่ร้าน"
-? "inline"
-: "none"
+document.getElementById("table").style.display=
+
+t=="ทานที่ร้าน"?"inline":"none"
 
 }
 
 
+
 function add(m,p){
+
+sound()
 
 if(order[m]){
 
@@ -267,6 +439,7 @@ show()
 }
 
 
+
 function show(){
 
 let text=""
@@ -275,37 +448,47 @@ let total=0
 for(let m in order){
 
 let q=order[m].qty
+
 let p=order[m].price
 
-text+=m+" x"+q+"\n"
+text+=m+" x"+q+"<br>"
 
 total+=q*p
 
 }
 
-document.getElementById("list").innerText=text
+document.getElementById("list").innerHTML=text
+
 document.getElementById("total").innerText="รวม "+total
 
 }
 
 
+
 function sendOrder(){
 
-let name =
+sound()
+
+let name=
+
 document.getElementById("customer").value
 
-let type =
+let type=
+
 document.getElementById("type").value
 
-let table =
+let table=
+
 document.getElementById("table").value
 
 let total=0
+
 let text=""
 
 for(let m in order){
 
 let q=order[m].qty
+
 let p=order[m].price
 
 text+=m+" x"+q+"\n"
@@ -315,50 +498,62 @@ total+=q*p
 }
 
 
-let full =
+let full=
+
 name+"\n"+
+
 type+"\n"+
+
 table+"\n"+
+
 text+
+
 "รวม "+total
 
 
 history.push({
 
 text:full,
+
 total:total
 
 })
 
 localStorage.setItem(
+
 "history",
+
 JSON.stringify(history)
+
 )
 
 
-showReceipt(full)
+receipt(full)
 
-sendDiscord(full)
+discord(full)
 
 order={}
 
 show()
 
 updateDash()
+
 showHistory()
 
 }
 
 
 
-function sendDiscord(msg){
+function discord(msg){
 
 fetch(WEBHOOK,{
 
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
 body:JSON.stringify({
@@ -372,10 +567,10 @@ content:msg
 }
 
 
-function showReceipt(t){
 
-let r =
-document.getElementById("receipt")
+function receipt(t){
+
+let r=document.getElementById("receipt")
 
 r.style.display="block"
 
@@ -398,7 +593,9 @@ let t=""
 history.forEach((h,i)=>{
 
 t+=
+
 h.text+
+
 ` <button onclick="finish(${i})">เสร็จ</button><hr>`
 
 })
@@ -414,11 +611,15 @@ function finish(i){
 history.splice(i,1)
 
 localStorage.setItem(
+
 "history",
+
 JSON.stringify(history)
+
 )
 
 showHistory()
+
 updateDash()
 
 }
@@ -430,13 +631,17 @@ function updateDash(){
 let money=0
 
 history.forEach(h=>{
+
 money+=h.total
+
 })
 
-document.getElementById("orderCount").innerText =
+document.getElementById("count").innerText=
+
 history.length
 
-document.getElementById("money").innerText =
+document.getElementById("money").innerText=
+
 money
 
 }
@@ -445,13 +650,14 @@ money
 
 function resetDay(){
 
-if(confirm("ล้างข้อมูลวันนี้?")){
+if(confirm("ล้าง?")){
 
 history=[]
 
 localStorage.removeItem("history")
 
 updateDash()
+
 showHistory()
 
 }
@@ -461,6 +667,7 @@ showHistory()
 
 
 updateDash()
+
 showHistory()
 
 </script>
