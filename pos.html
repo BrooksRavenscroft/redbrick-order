@@ -132,19 +132,6 @@ font-size:25px;
 color:#cc7a00;
 }
 
-#receipt{
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-padding:20px;
-border-radius:12px;
-display:none;
-box-shadow:0 0 20px #0005;
-width:300px;
-}
-
 </style>
 </head>
 <body>
@@ -188,6 +175,10 @@ location.href="index.html"
 ล้างข้อมูลวันนี้
 </button>
 
+<button class="bigBtn" onclick="clearAll()">
+ล้างทั้งหมดทั้งระบบ
+</button>
+
 </div>
 
 
@@ -198,49 +189,19 @@ location.href="index.html"
 
 <input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
 
-<br>
-
-<button id="eatBtn" class="bigBtn"
-onclick="setType('eat',this)">
-🍽 ทานที่ร้าน
-</button>
-
-<button id="backBtn" class="bigBtn"
-onclick="setType('back',this)">
-🥡 กลับบ้าน
-</button>
-
-<div class="posGrid">
-
-<div>
-
-<div id="tableBox"></div>
-
 <div class="menuGrid">
 
-<button class="menuBtn" onclick="add('Coffee',50)">☕ Coffee</button>
-<button class="menuBtn" onclick="add('Cake',70)">🍰 Cake</button>
-<button class="menuBtn" onclick="add('Tea',40)">🍵 Tea</button>
-<button class="menuBtn" onclick="add('Milk',30)">🥛 Milk</button>
-<button class="menuBtn" onclick="add('Cookie',35)">🍪 Cookie</button>
-<button class="menuBtn" onclick="add('Latte',60)">🥛 Latte</button>
+<button class="menuBtn" onclick="add('Coffee',50)">Coffee</button>
+<button class="menuBtn" onclick="add('Tea',40)">Tea</button>
+<button class="menuBtn" onclick="add('Milk',30)">Milk</button>
+<button class="menuBtn" onclick="add('Cake',70)">Cake</button>
 
 </div>
-
-</div>
-
-
-<div>
 
 <div id="list" class="order"></div>
 <div id="total" class="big"></div>
 
-<button class="bigBtn" onclick="sendOrder()">ส่งออเดอร์</button>
-<button class="bigBtn" onclick="cancelOrder()">ยกเลิก</button>
-
-</div>
-
-</div>
+<button class="bigBtn" onclick="sendOrder()">ส่ง</button>
 
 </div>
 </div>
@@ -260,8 +221,6 @@ onclick="setType('back',this)">
 </div>
 
 
-<div id="receipt"></div>
-
 
 <script>
 
@@ -272,28 +231,7 @@ let order={}
 let history=JSON.parse(localStorage.getItem("history"))||[]
 let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
 
-let table=""
-let type=""
-
-let todayKey =
-new Date().toDateString()
-
-
-
-let tb=document.getElementById("tableBox")
-
-for(let i=1;i<=22;i++){
-
-let b=document.createElement("button")
-
-b.innerText="โต๊ะ "+i
-b.className="tableBtn"
-
-b.onclick=()=>selectTable(i,b)
-
-tb.appendChild(b)
-
-}
+let today=new Date().toDateString()
 
 
 
@@ -315,49 +253,8 @@ showDone()
 
 function logout(){
 
-localStorage.removeItem("staff")
+localStorage.clear()
 location.href="index.html"
-
-}
-
-
-
-function setType(t,btn){
-
-type=t
-
-eatBtn.classList.remove("selected")
-backBtn.classList.remove("selected")
-
-btn.classList.add("selected")
-
-if(t=="eat"){
-tableBox.style.display="grid"
-}else{
-tableBox.style.display="none"
-table=""
-}
-
-}
-
-
-
-function selectTable(i,btn){
-
-let t="โต๊ะ "+i
-
-if(table==t){
-table=""
-btn.classList.remove("tableSelect")
-return
-}
-
-table=t
-
-document.querySelectorAll(".tableBtn")
-.forEach(b=>b.classList.remove("tableSelect"))
-
-btn.classList.add("tableSelect")
 
 }
 
@@ -377,20 +274,6 @@ show()
 
 
 
-function minus(m){
-
-order[m].qty--
-
-if(order[m].qty<=0){
-delete order[m]
-}
-
-show()
-
-}
-
-
-
 function show(){
 
 let text=""
@@ -401,17 +284,14 @@ for(let m in order){
 let q=order[m].qty
 let price=q*order[m].price
 
-text+=
-m+" x"+q+
-" = "+price+
-` <button onclick="minus('${m}')">-</button><br>`
+text+=m+" x"+q+" = "+price+"<br>"
 
 total+=price
 
 }
 
 list.innerHTML=text
-totalBox.innerText="รวม "+total+" บาท"
+totalBox.innerText="รวม "+total
 
 }
 
@@ -429,25 +309,20 @@ let now=new Date()
 
 let data={
 
-name:customer.value,
-table:table,
 items:JSON.stringify(order),
 total:total,
-
 dateKey:now.toDateString(),
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
 
 }
 
-history.push(data)
+doneHistory.push(data)
 
 localStorage.setItem(
-"history",
-JSON.stringify(history)
+"done",
+JSON.stringify(doneHistory)
 )
-
-showReceipt(data)
 
 order={}
 show()
@@ -458,14 +333,11 @@ updateDash()
 
 
 
-function finish(i){
+function clearToday(){
 
-doneHistory.push(history[i])
-history.splice(i,1)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
+doneHistory=
+doneHistory.filter(
+h=>h.dateKey!==today
 )
 
 localStorage.setItem(
@@ -473,35 +345,20 @@ localStorage.setItem(
 JSON.stringify(doneHistory)
 )
 
-showHistory()
-showDone()
 updateDash()
+showDone()
 
 }
 
 
 
-function clearToday(){
+function clearAll(){
 
-history =
-history.filter(h=>h.dateKey!==todayKey)
+if(!confirm("ล้างทั้งหมด ?")) return
 
-doneHistory =
-doneHistory.filter(h=>h.dateKey!==todayKey)
+localStorage.clear()
 
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-updateDash()
-showHistory()
-showDone()
+location.reload()
 
 }
 
@@ -512,7 +369,7 @@ function updateDash(){
 let sum=0
 
 doneHistory.forEach(h=>{
-if(h.dateKey===todayKey){
+if(h.dateKey===today){
 sum+=h.total
 }
 })
@@ -525,34 +382,7 @@ money.innerText=sum
 
 function showHistory(){
 
-let t=""
-
-history.forEach((h,i)=>{
-
-let obj=JSON.parse(h.items)
-
-let items=""
-
-for(let m in obj){
-
-items+=
-m+" x"+obj[m].qty+
-" = "+
-(obj[m].qty*obj[m].price)+"<br>"
-
-}
-
-t+=
-h.name+" "+h.table+
-"<br>"+h.date+
-"<br>"+h.time+
-"<br>"+items+
-"<b>รวม "+h.total+"</b>"+
-`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
-
-})
-
-historyBox.innerHTML=t
+historyBox.innerHTML=""
 
 }
 
@@ -565,8 +395,7 @@ let t=""
 doneHistory.forEach(h=>{
 
 t+=
-h.name+" "+h.table+
-"<br>"+h.date+
+h.date+
 "<br>"+h.time+
 "<br>รวม "+h.total+
 "<hr>"
@@ -578,8 +407,8 @@ doneBox.innerHTML=t
 }
 
 
+
 updateDash()
-showHistory()
 showDone()
 
 </script>
