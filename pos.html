@@ -58,8 +58,8 @@ width:95%;
 }
 
 .bigBtn{
-font-size:18px;
-padding:8px;
+font-size:20px;
+padding:10px;
 margin:5px;
 border:none;
 border-radius:10px;
@@ -68,8 +68,8 @@ color:white;
 cursor:pointer;
 }
 
-.green{
-background:#27ae60;
+.selected{
+background:#27ae60!important;
 }
 
 .posGrid{
@@ -82,7 +82,7 @@ gap:10px;
 display:none;
 grid-template-columns:repeat(6,1fr);
 gap:5px;
-margin:5px 0;
+margin-bottom:10px;
 }
 
 .tableBtn{
@@ -100,7 +100,7 @@ color:white;
 
 .menuGrid{
 display:grid;
-grid-template-columns:1fr 1fr;
+grid-template-columns:repeat(2,1fr);
 gap:5px;
 }
 
@@ -116,6 +116,7 @@ cursor:pointer;
 .order{
 background:#f2e2d2;
 padding:10px;
+margin-top:10px;
 }
 
 .card{
@@ -129,6 +130,19 @@ border-radius:10px;
 .big{
 font-size:25px;
 color:#cc7a00;
+}
+
+#receipt{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px;
+border-radius:12px;
+display:none;
+box-shadow:0 0 20px #0005;
+width:300px;
 }
 
 </style>
@@ -159,8 +173,6 @@ location.href="index.html"
 </div>
 
 
-<!-- DASHBOARD -->
-
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
@@ -172,14 +184,13 @@ location.href="index.html"
 
 <br>
 
-<button class="bigBtn" onclick="clearToday()">ล้างข้อมูลวันนี้</button>
-<button class="bigBtn" onclick="clearAll()">ล้างทั้งหมด</button>
+<button class="bigBtn" onclick="clearToday()">
+ล้างข้อมูลวันนี้
+</button>
 
 </div>
 
 
-
-<!-- POS -->
 
 <div id="pos" class="page">
 
@@ -189,21 +200,21 @@ location.href="index.html"
 
 <br>
 
-<button class="bigBtn green" onclick="setType('eat')">
+<button id="eatBtn" class="bigBtn"
+onclick="setType('eat',this)">
 🍽 ทานที่ร้าน
 </button>
 
-<button class="bigBtn" onclick="setType('back')">
+<button id="backBtn" class="bigBtn"
+onclick="setType('back',this)">
 🥡 กลับบ้าน
 </button>
-
-
-<div id="tableBox"></div>
-
 
 <div class="posGrid">
 
 <div>
+
+<div id="tableBox"></div>
 
 <div class="menuGrid">
 
@@ -242,11 +253,14 @@ location.href="index.html"
 </div>
 
 
+
 <div id="done" class="page">
 <h2>ย้อนหลัง</h2>
 <div id="doneBox"></div>
 </div>
 
+
+<div id="receipt"></div>
 
 
 <script>
@@ -255,13 +269,14 @@ document.getElementById("staff").innerText =
 localStorage.getItem("staff")
 
 let order={}
+let history=JSON.parse(localStorage.getItem("history"))||[]
+let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
+
 let table=""
 let type=""
 
-let doneHistory=
-JSON.parse(localStorage.getItem("done"))||[]
-
-let today=new Date().toDateString()
+let todayKey =
+new Date().toDateString()
 
 
 
@@ -274,9 +289,7 @@ let b=document.createElement("button")
 b.innerText="โต๊ะ "+i
 b.className="tableBtn"
 
-b.onclick=()=>{
-table="โต๊ะ "+i
-}
+b.onclick=()=>selectTable(i,b)
 
 tb.appendChild(b)
 
@@ -293,6 +306,7 @@ document.getElementById(p)
 .classList.add("active")
 
 updateDash()
+showHistory()
 showDone()
 
 }
@@ -301,16 +315,21 @@ showDone()
 
 function logout(){
 
-localStorage.clear()
+localStorage.removeItem("staff")
 location.href="index.html"
 
 }
 
 
 
-function setType(t){
+function setType(t,btn){
 
 type=t
+
+eatBtn.classList.remove("selected")
+backBtn.classList.remove("selected")
+
+btn.classList.add("selected")
 
 if(t=="eat"){
 tableBox.style.display="grid"
@@ -318,6 +337,27 @@ tableBox.style.display="grid"
 tableBox.style.display="none"
 table=""
 }
+
+}
+
+
+
+function selectTable(i,btn){
+
+let t="โต๊ะ "+i
+
+if(table==t){
+table=""
+btn.classList.remove("tableSelect")
+return
+}
+
+table=t
+
+document.querySelectorAll(".tableBtn")
+.forEach(b=>b.classList.remove("tableSelect"))
+
+btn.classList.add("tableSelect")
 
 }
 
@@ -337,6 +377,20 @@ show()
 
 
 
+function minus(m){
+
+order[m].qty--
+
+if(order[m].qty<=0){
+delete order[m]
+}
+
+show()
+
+}
+
+
+
 function show(){
 
 let text=""
@@ -347,14 +401,17 @@ for(let m in order){
 let q=order[m].qty
 let price=q*order[m].price
 
-text+=m+" x"+q+" = "+price+"<br>"
+text+=
+m+" x"+q+
+" = "+price+
+` <button onclick="minus('${m}')">-</button><br>`
 
 total+=price
 
 }
 
 list.innerHTML=text
-totalBox.innerText="รวม "+total
+totalBox.innerText="รวม "+total+" บาท"
 
 }
 
@@ -370,21 +427,27 @@ total+=order[m].qty*order[m].price
 
 let now=new Date()
 
-doneHistory.push({
+let data={
 
+name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
+
 dateKey:now.toDateString(),
 date:now.toLocaleDateString(),
 time:now.toLocaleTimeString()
 
-})
+}
+
+history.push(data)
 
 localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
+"history",
+JSON.stringify(history)
 )
+
+showReceipt(data)
 
 order={}
 show()
@@ -395,10 +458,24 @@ updateDash()
 
 
 
-function cancelOrder(){
+function finish(i){
 
-order={}
-show()
+doneHistory.push(history[i])
+history.splice(i,1)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+showHistory()
+showDone()
+updateDash()
 
 }
 
@@ -406,9 +483,15 @@ show()
 
 function clearToday(){
 
-doneHistory=
-doneHistory.filter(
-h=>h.dateKey!==today
+history =
+history.filter(h=>h.dateKey!==todayKey)
+
+doneHistory =
+doneHistory.filter(h=>h.dateKey!==todayKey)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
 )
 
 localStorage.setItem(
@@ -417,19 +500,8 @@ JSON.stringify(doneHistory)
 )
 
 updateDash()
+showHistory()
 showDone()
-
-}
-
-
-
-function clearAll(){
-
-if(!confirm("ล้างทั้งหมด ?")) return
-
-localStorage.clear()
-
-location.reload()
 
 }
 
@@ -440,12 +512,47 @@ function updateDash(){
 let sum=0
 
 doneHistory.forEach(h=>{
-if(h.dateKey===today){
+if(h.dateKey===todayKey){
 sum+=h.total
 }
 })
 
 money.innerText=sum
+
+}
+
+
+
+function showHistory(){
+
+let t=""
+
+history.forEach((h,i)=>{
+
+let obj=JSON.parse(h.items)
+
+let items=""
+
+for(let m in obj){
+
+items+=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
+
+}
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>"+items+
+"<b>รวม "+h.total+"</b>"+
+`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
+
+})
+
+historyBox.innerHTML=t
 
 }
 
@@ -458,7 +565,7 @@ let t=""
 doneHistory.forEach(h=>{
 
 t+=
-h.table+
+h.name+" "+h.table+
 "<br>"+h.date+
 "<br>"+h.time+
 "<br>รวม "+h.total+
@@ -472,6 +579,7 @@ doneBox.innerHTML=t
 
 
 updateDash()
+showHistory()
 showDone()
 
 </script>
