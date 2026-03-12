@@ -13,7 +13,7 @@ background:#1e1e1e;
 color:white;
 }
 
-/* ===== TOP MENU ===== */
+/* ===== TOP ===== */
 
 .topbar{
 
@@ -341,13 +341,32 @@ function showHistory(){
 
 let t=""
 
-history.forEach(h=>{
+history.forEach((h,i)=>{
 
-t+=h.text+" = "+h.total+"<hr>"
+t+=
+h.text+
+" = "+
+h.total+
+` <button onclick="finish(${i})">เสร็จ</button><hr>`
 
 })
 
 document.getElementById("historyBox").innerHTML=t
+
+}
+
+
+function finish(i){
+
+history.splice(i,1)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+showHistory()
+updateDashboard()
 
 }
 
