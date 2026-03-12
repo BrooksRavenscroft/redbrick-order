@@ -78,8 +78,6 @@ grid-template-columns:1fr 1fr;
 gap:10px;
 }
 
-/* table */
-
 #tableBox{
 display:none;
 grid-template-columns:repeat(6,1fr);
@@ -99,8 +97,6 @@ cursor:pointer;
 background:#e67e22;
 color:white;
 }
-
-/* menu */
 
 .menuGrid{
 display:grid;
@@ -184,8 +180,18 @@ location.href="index.html"
 <h2>Dashboard</h2>
 
 <div class="card">
+
 วันนี้ขายได้
+
 <div id="money" class="big">0</div>
+
+<br>
+
+<button class="bigBtn"
+onclick="clearToday()">
+ล้างข้อมูลวันนี้
+</button>
+
 </div>
 
 </div>
@@ -240,13 +246,15 @@ onclick="setType('back',this)">
 
 <div id="list" class="order"></div>
 
-<div id="total"></div>
+<div id="total" class="big"></div>
 
-<button class="bigBtn" onclick="sendOrder()">
+<button class="bigBtn"
+onclick="sendOrder()">
 ส่งออเดอร์
 </button>
 
-<button class="bigBtn" onclick="cancelOrder()">
+<button class="bigBtn"
+onclick="cancelOrder()">
 ยกเลิก
 </button>
 
@@ -283,8 +291,11 @@ document.getElementById("staff").innerText=
 localStorage.getItem("staff")
 
 let order={}
-let history=JSON.parse(localStorage.getItem("history"))||[]
-let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
+let history=
+JSON.parse(localStorage.getItem("history"))||[]
+
+let doneHistory=
+JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
@@ -418,7 +429,8 @@ total+=price
 }
 
 list.innerHTML=text
-totalDiv.innerText="รวม "+total+" บาท"
+document.getElementById("total").innerText=
+"รวม "+total+" บาท"
 
 }
 
@@ -560,8 +572,6 @@ doneBox.innerHTML=t
 }
 
 
-/* dash */
-
 function updateDash(){
 
 let sum=0
@@ -573,6 +583,33 @@ sum+=h.total
 })
 
 money.innerText=sum
+
+}
+
+
+function clearToday(){
+
+if(!confirm("ล้างข้อมูลวันนี้?")) return
+
+doneHistory =
+doneHistory.filter(h=>h.date!=today)
+
+history =
+history.filter(h=>h.date!=today)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
+
+updateDash()
+showHistory()
+showDone()
 
 }
 
