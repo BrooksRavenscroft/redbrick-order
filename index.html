@@ -10,44 +10,119 @@ body{
 margin:0;
 font-family:Segoe UI;
 background:#f5e6d8;
-text-align:center;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
+
 
 .box{
-margin-top:100px;
+
+background:white;
+padding:30px;
+border-radius:15px;
+text-align:center;
+width:420px;
+
+box-shadow:0 0 10px #0003;
+
 }
 
-button{
-font-size:20px;
-padding:10px 20px;
-margin:10px;
+
+/* logo */
+
+.logoImg{
+
+width:120px;
+margin-bottom:10px;
+
+}
+
+
+.title{
+
+font-size:28px;
+margin-bottom:15px;
+color:#6b4b3a;
+
+}
+
+
+/* button */
+
+.staffBtn{
+
+display:block;
+width:100%;
+padding:12px;
+margin:8px 0;
+font-size:18px;
+
 border:none;
 border-radius:10px;
-background:#cc7a00;
+
+background:#d9a066;
 color:white;
+
 cursor:pointer;
+
+transition:0.2s;
+
 }
 
-</style>
 
+.staffBtn:hover{
+
+background:#cc7a00;
+transform:scale(1.03);
+
+}
+
+
+</style>
 </head>
 <body>
 
+
 <div class="box">
 
-<h1>☕ Redbrick Cafe</h1>
 
-<h2>เลือกพนักงาน</h2>
+<img src="logo.png" class="logoImg">
 
-<button onclick="login('Brooks')">
+
+<div class="title">
+Blue Cafe POS
+</div>
+
+
+<button class="staffBtn"
+onclick="login('Brooks')">
 Brooks
 </button>
 
-<button onclick="login('Belial Blair')">
+
+<button class="staffBtn"
+onclick="login('Belial Blair')">
 Belial Blair
 </button>
 
+
+<button class="staffBtn"
+onclick="login('Pinae')">
+Pinae
+</button>
+
+
+<button class="staffBtn"
+onclick="login('Zoe')">
+Zoe
+</button>
+
+
 </div>
+
+
 
 <script>
 
@@ -60,6 +135,7 @@ location.href="pos.html"
 }
 
 </script>
+
 
 </body>
 </html>
