@@ -12,8 +12,6 @@ font-family:Segoe UI;
 background:#f5e6d8;
 }
 
-/* ===== top ===== */
-
 .topbar{
 background:#6b4b3a;
 color:white;
@@ -40,8 +38,6 @@ padding:6px 10px;
 cursor:pointer;
 }
 
-/* ===== page ===== */
-
 .page{
 display:none;
 padding:10px;
@@ -51,17 +47,13 @@ padding:10px;
 display:block;
 }
 
-/* ===== center ===== */
-
 .centerBox{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 background:white;
 padding:15px;
 border-radius:12px;
 }
-
-/* ===== input ===== */
 
 .bigInput{
 font-size:22px;
@@ -87,61 +79,84 @@ background:#27ae60 !important;
 color:white;
 }
 
-/* ===== table ===== */
+
+/* ---------- layout fix ---------- */
+
+.posGrid{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+
+}
+
+
+/* ---------- table ---------- */
 
 #tableBox{
+
 display:none;
 grid-template-columns:repeat(6,1fr);
 gap:5px;
 margin-top:10px;
+
 }
 
 .tableBtn{
+
 padding:6px;
 border:none;
 border-radius:8px;
 background:#bdc3c7;
 cursor:pointer;
+
 }
 
 .tableSelect{
+
 background:#e67e22;
 color:white;
+
 }
 
-.tableBusy{
-background:#e74c3c;
-color:white;
-}
 
-/* ===== menu ===== */
+/* ---------- menu ---------- */
 
 .menuGrid{
+
 display:grid;
-grid-template-columns:repeat(3,1fr);
+grid-template-columns:repeat(2,1fr);
 gap:5px;
+
 }
 
 .menuBtn{
+
 font-size:18px;
 padding:8px;
 border:none;
 border-radius:10px;
 background:#ffe0c2;
 cursor:pointer;
+
 }
 
-/* ===== order ===== */
+
+/* ---------- order ---------- */
 
 .order{
+
 background:#f2e2d2;
 padding:10px;
 margin-top:10px;
+
 }
 
-/* ===== receipt ===== */
+
+/* ---------- receipt ---------- */
 
 #receipt{
+
 position:fixed;
 top:50%;
 left:50%;
@@ -151,25 +166,32 @@ padding:20px;
 border-radius:12px;
 display:none;
 box-shadow:0 0 20px #0005;
+width:300px;
+
 }
 
+
 .card{
+
 background:white;
 padding:15px;
 display:inline-block;
 margin:10px;
 border-radius:10px;
+
 }
 
 .big{
+
 font-size:25px;
 color:#cc7a00;
+
 }
 
 </style>
-
 </head>
 <body>
+
 
 <script>
 
@@ -204,7 +226,6 @@ title="Logout">⎋</button>
 </div>
 
 
-<!-- ===== HOME ===== -->
 
 <div id="home" class="page active">
 
@@ -215,14 +236,9 @@ title="Logout">⎋</button>
 <div id="money" class="big">0</div>
 </div>
 
-<button onclick="resetDone()">
-ล้างย้อนหลัง
-</button>
-
 </div>
 
 
-<!-- ===== POS ===== -->
 
 <div id="pos" class="page">
 
@@ -247,8 +263,11 @@ onclick="setType('back',this)">
 </button>
 
 
-<div id="tableBox"></div>
+<div class="posGrid">
 
+<div>
+
+<div id="tableBox"></div>
 
 <div class="menuGrid">
 
@@ -272,33 +291,35 @@ onclick="add('Latte',60)">🥛 Latte</button>
 
 </div>
 
+</div>
+
+<div>
 
 <div id="list" class="order"></div>
 
 <div id="total"></div>
 
 <button class="bigBtn"
-onclick="sendOrder()">ส่งออเดอร์</button>
+onclick="sendOrder()">
+ส่งออเดอร์
+</button>
 
 <button class="bigBtn"
-onclick="cancelOrder()">ยกเลิก</button>
+onclick="cancelOrder()">
+ยกเลิก
+</button>
 
 </div>
 
 </div>
 
-
-
-<!-- ===== HISTORY ===== -->
-
+</div>
+</div>
 <div id="history" class="page">
 <h2>ค้าง</h2>
 <div id="historyBox"></div>
 </div>
 
-
-
-<!-- ===== DONE ===== -->
 
 <div id="done" class="page">
 <h2>ย้อนหลัง</h2>
@@ -306,14 +327,12 @@ onclick="cancelOrder()">ยกเลิก</button>
 </div>
 
 
-
 <div id="receipt"></div>
-
 
 
 <script>
 
-document.getElementById("staff").innerText=
+document.getElementById("staff").innerText =
 localStorage.getItem("staff")
 
 let order={}
@@ -325,7 +344,6 @@ JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
-
 let today=new Date().toDateString()
 
 
@@ -338,7 +356,6 @@ for(let i=1;i<=22;i++){
 let b=document.createElement("button")
 
 b.innerText="โต๊ะ "+i
-
 b.className="tableBtn"
 
 b.onclick=()=>selectTable(i,b)
@@ -427,6 +444,7 @@ show()
 
 }
 
+
 function minus(m){
 
 order[m].qty--
@@ -449,16 +467,17 @@ for(let m in order){
 
 let q=order[m].qty
 
-text+=
+text +=
 m+" x"+q+
-` <button onclick="minus('${m}')">-</button><br>`
+" ("+(q*order[m].price)+") "+
+`<button onclick="minus('${m}')">-</button><br>`
 
 total+=q*order[m].price
 
 }
 
 list.innerHTML=text
-totalDiv.innerText="รวม "+total
+totalDiv.innerText="รวม "+total+" บาท"
 
 }
 
@@ -482,9 +501,12 @@ total+=order[m].qty*order[m].price
 }
 
 let data={
+
 date:today,
 text:customer.value+" "+table,
+items:JSON.stringify(order),
 total:total
+
 }
 
 history.push(data)
@@ -494,7 +516,7 @@ localStorage.setItem(
 JSON.stringify(history)
 )
 
-receipt(data)
+showReceipt(data)
 
 order={}
 show()
@@ -506,20 +528,33 @@ updateDash()
 
 /* ===== receipt ===== */
 
-function receipt(d){
+function showReceipt(d){
 
-receiptBox.innerHTML=
-`
-<h3>☕ Cafe</h3>
-${d.text}
-<br>
-รวม ${d.total}
-`
+let items=""
 
-receiptBox.style.display="block"
+let obj=JSON.parse(d.items)
+
+for(let m in obj){
+
+items +=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
+
+}
+
+receipt.innerHTML=
+
+"<h3>☕ Cafe Receipt</h3>"+
+d.text+"<br><br>"+
+items+
+"<hr>"+
+"รวม "+d.total+" บาท"
+
+receipt.style.display="block"
 
 setTimeout(()=>{
-receiptBox.style.display="none"
+receipt.style.display="none"
 },3000)
 
 }
@@ -533,10 +568,12 @@ doneHistory.push(history[i])
 
 history.splice(i,1)
 
-localStorage.setItem("history",
+localStorage.setItem(
+"history",
 JSON.stringify(history))
 
-localStorage.setItem("done",
+localStorage.setItem(
+"done",
 JSON.stringify(doneHistory))
 
 showHistory()
@@ -554,7 +591,8 @@ history.forEach((h,i)=>{
 
 t+=
 h.text+
-` <button onclick="finish(${i})">เสร็จ</button><hr>`
+"<br>"+h.items+
+`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
 
 })
 
@@ -597,20 +635,6 @@ sum+=h.total
 })
 
 money.innerText=sum
-
-}
-
-
-function resetDone(){
-
-doneHistory=[]
-
-localStorage.setItem(
-"done","[]"
-)
-
-showDone()
-updateDash()
 
 }
 
