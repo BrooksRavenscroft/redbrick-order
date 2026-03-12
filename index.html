@@ -8,48 +8,57 @@
 
 body{
 margin:0;
-font-family:Arial;
-background:#2b2b2b;
+font-family:Segoe UI;
+background:url("https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb");
+background-size:cover;
 color:white;
 text-align:center;
 }
 
 .box{
-background:#3b3b3b;
-width:480px;
+background:rgba(30,30,30,0.85);
+width:520px;
 margin:auto;
 margin-top:20px;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
+box-shadow:0 0 15px black;
+}
+
+.logo{
+font-size:28px;
+color:#ff4444;
 }
 
 button{
-padding:10px;
-margin:5px;
+padding:8px 12px;
+margin:4px;
 border:none;
-border-radius:5px;
+border-radius:6px;
 cursor:pointer;
+font-weight:bold;
 }
 
 .menu button{
 background:#444;
 color:white;
+width:100px;
 }
 
 .menu button:hover{
 background:#b30000;
 }
 
-.send{background:green}
-.cancel{background:red}
-.logout{background:#555}
+.send{background:#00aa55;color:white;}
+.cancel{background:#cc0000;color:white;}
+.logout{background:#555;color:white;}
 
 .order{
 background:#111;
 padding:10px;
 margin-top:10px;
 text-align:left;
-white-space:pre-line;
+border-radius:6px;
 }
 
 .history{
@@ -57,13 +66,36 @@ background:#222;
 padding:10px;
 margin-top:10px;
 text-align:left;
-max-height:150px;
+max-height:200px;
 overflow:auto;
+border-radius:6px;
 }
 
 .total{
 color:#00ffaa;
+font-size:18px;
 margin-top:5px;
+}
+
+input,select{
+padding:8px;
+margin:5px;
+border-radius:6px;
+border:none;
+width:90%;
+}
+
+#receipt{
+position:fixed;
+top:20%;
+left:50%;
+transform:translateX(-50%);
+background:white;
+color:black;
+padding:20px;
+width:320px;
+border-radius:10px;
+display:none;
 }
 
 </style>
@@ -71,10 +103,13 @@ margin-top:5px;
 </head>
 <body>
 
+<!-- LOGIN -->
 
 <div id="login" class="box">
 
-<h2>Redbrick Coffee Shop</h2>
+<div class="logo">
+Redbrick Coffee Shop
+</div>
 
 <button onclick="login('Brooks')">Brooks</button>
 <button onclick="login('Belial Blair')">Belial Blair</button>
@@ -82,8 +117,11 @@ margin-top:5px;
 </div>
 
 
+<!-- ORDER -->
 
 <div id="orderPage" class="box" style="display:none;">
+
+<div class="logo">Redbrick POS</div>
 
 <h3 id="staffName"></h3>
 
@@ -95,7 +133,7 @@ margin-top:5px;
 <option>กลับบ้าน</option>
 </select>
 
-<h3>เมนู</h3>
+<h3>☕ MENU</h3>
 
 <div class="menu">
 
@@ -107,20 +145,34 @@ margin-top:5px;
 
 </div>
 
+<h3>📦 ORDER</h3>
+
 <div id="list" class="order"></div>
 
 <div id="total" class="total"></div>
 
-<button onclick="sendOrder()" class="send">ส่ง</button>
-<button onclick="cancelOrder()" class="cancel">ยกเลิก</button>
-<button onclick="logout()" class="logout">Logout</button>
+<button class="send" onclick="sendOrder()">ส่ง</button>
+<button class="cancel" onclick="cancelOrder()">ยกเลิก</button>
+<button class="logout" onclick="logout()">Logout</button>
 
-<h3>บันทึกออเดอร์</h3>
+<h3>📜 HISTORY</h3>
 
 <div id="history" class="history"></div>
 
 </div>
 
+
+<!-- RECEIPT -->
+
+<div id="receipt">
+
+<div id="receiptText"></div>
+
+<button onclick="closeReceipt()">
+ปิด
+</button>
+
+</div>
 
 
 <script>
@@ -129,7 +181,8 @@ const WEBHOOK="ใส่ webhook"
 
 let staff=""
 let order={}
-let history=[]
+let history = JSON.parse(localStorage.getItem("history")) || []
+
 
 function login(name){
 
@@ -140,7 +193,10 @@ document.getElementById("orderPage").style.display="block"
 
 document.getElementById("staffName").innerText="พนักงาน: "+staff
 
+showHistory()
+
 }
+
 
 function logout(){
 
@@ -153,6 +209,7 @@ document.getElementById("login").style.display="block"
 show()
 
 }
+
 
 function add(menu,price){
 
@@ -170,9 +227,16 @@ show()
 
 }
 
-function remove(menu){
 
-if(order[menu]){
+function plus(menu){
+
+order[menu].qty++
+show()
+
+}
+
+
+function minus(menu){
 
 order[menu].qty--
 
@@ -182,11 +246,10 @@ delete order[menu]
 
 }
 
-}
-
 show()
 
 }
+
 
 function cancelOrder(){
 
@@ -195,9 +258,10 @@ show()
 
 }
 
+
 function show(){
 
-let text=""
+let html=""
 let total=0
 
 for(let m in order){
@@ -205,18 +269,24 @@ for(let m in order){
 let q=order[m].qty
 let p=order[m].price
 
-text+=m+" x"+q+" = "+(q*p)
-text+="  (-)"
-text+="\n"
+html+=`
+${m}
+<button onclick="minus('${m}')">-</button>
+${q}
+<button onclick="plus('${m}')">+</button>
+= ${q*p}
+<br>
+`
 
 total+=q*p
 
 }
 
-document.getElementById("list").innerText=text
+document.getElementById("list").innerHTML=html
 document.getElementById("total").innerText="รวม "+total+" บาท"
 
 }
+
 
 async function sendOrder(){
 
@@ -238,6 +308,7 @@ total+=q*p
 
 }
 
+
 await fetch(WEBHOOK,{
 method:"POST",
 headers:{
@@ -257,7 +328,27 @@ ${text}
 })
 })
 
-history.push(name+" "+total+" บาท")
+
+let receiptText = `
+Redbrick Coffee Shop
+
+${name}
+โต๊ะ ${table}
+${type}
+
+${text}
+
+รวม ${total}
+`
+
+history.push({text:receiptText})
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+showReceipt(receiptText)
 
 showHistory()
 
@@ -266,17 +357,62 @@ show()
 
 }
 
+
 function showHistory(){
 
-let text=""
+let t=""
 
-for(let h of history){
+history.forEach((h,i)=>{
 
-text+=h+"\n"
+t+=`
+${h.text}
+
+<button onclick="finish(${i})">
+เสร็จสิ้น
+</button>
+
+<hr>
+`
+
+})
+
+document.getElementById("history").innerHTML=t
 
 }
 
-document.getElementById("history").innerText=text
+
+function finish(i){
+
+history.splice(i,1)
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+showHistory()
+
+}
+
+
+function showReceipt(text){
+
+document.getElementById(
+"receiptText"
+).innerText=text
+
+document.getElementById(
+"receipt"
+).style.display="block"
+
+}
+
+
+function closeReceipt(){
+
+document.getElementById(
+"receipt"
+).style.display="none"
 
 }
 
