@@ -2,78 +2,128 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Redbrick Coffee Shop</title>
+<title>Redbrick System</title>
 
 <style>
 
 body{
 margin:0;
 font-family:Segoe UI;
-background:url("https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb");
-background-size:cover;
-background-position:center;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
+background:#1e1e1e;
 color:white;
 }
 
-/* กล่อง login */
+/* ===== TOP MENU ===== */
 
-.loginBox{
+.topbar{
 
-background:rgba(20,20,20,0.85);
-padding:30px;
-border-radius:15px;
-text-align:center;
-width:350px;
+background:#111;
+padding:10px;
 
-box-shadow:0 0 25px black;
+display:flex;
+justify-content:space-between;
+align-items:center;
 
 }
 
-/* โลโก้ */
+.menuTop button{
 
-.logoImg{
-width:220px;
-margin-bottom:10px;
+margin-right:5px;
+padding:6px 10px;
+border:none;
+background:#333;
+color:white;
+cursor:pointer;
+
 }
 
-/* ชื่อร้าน */
+.menuTop button:hover{
 
-.title{
-font-size:26px;
-color:#ff4444;
-margin-bottom:10px;
+background:#b30000;
+
 }
 
-/* ปุ่ม */
+.staff{
+
+color:#00ffaa;
+
+}
+
+/* ===== PAGE ===== */
+
+.page{
+
+display:none;
+padding:20px;
+
+}
+
+.active{
+
+display:block;
+
+}
+
+/* ===== DASHBOARD ===== */
+
+.card{
+
+background:#2b2b2b;
+padding:20px;
+border-radius:10px;
+margin:10px;
+width:250px;
+display:inline-block;
+
+}
+
+.big{
+
+font-size:30px;
+
+}
+
+/* ===== POS ===== */
+
+.box{
+
+background:#2b2b2b;
+padding:20px;
+width:500px;
+margin:auto;
+border-radius:10px;
+
+}
 
 button{
 
-width:100%;
-padding:12px;
-margin-top:10px;
-
-font-size:16px;
-
+padding:8px;
+margin:4px;
 border:none;
-border-radius:8px;
-
-background:#b30000;
-color:white;
-
+border-radius:6px;
 cursor:pointer;
-
-transition:0.2s;
 
 }
 
-button:hover{
+.menu button{
 
-background:#ff3333;
-transform:scale(1.05);
+background:#444;
+color:white;
+
+}
+
+.order{
+
+background:#111;
+padding:10px;
+margin-top:10px;
+
+}
+
+.history{
+
+background:#111;
+padding:10px;
 
 }
 
@@ -83,23 +133,107 @@ transform:scale(1.05);
 <body>
 
 
-<div class="loginBox">
+<!-- TOP -->
 
-<img src="logo.png" class="logoImg">
+<div class="topbar">
 
-<div class="title">
-Redbrick Coffee Shop
+<div class="menuTop">
+
+<button onclick="showPage('home')">
+หน้าแรก
+</button>
+
+<button onclick="showPage('pos')">
+POS
+</button>
+
+<button onclick="showPage('history')">
+ออเดอร์
+</button>
+
 </div>
 
-<p>เลือกพนักงาน</p>
+<div class="staff" id="staffName"></div>
 
-<button onclick="login('Brooks')">
-Brooks
+</div>
+
+
+
+<!-- ================= HOME ================= -->
+
+<div id="home" class="page active">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+
+ออเดอร์วันนี้
+
+<div id="orderCount" class="big">
+0
+</div>
+
+</div>
+
+
+<div class="card">
+
+รายได้วันนี้
+
+<div id="money" class="big">
+0
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- ================= POS ================= -->
+
+<div id="pos" class="page">
+
+<div class="box">
+
+<input id="name" placeholder="ลูกค้า">
+
+<select id="type">
+<option>ทานที่ร้าน</option>
+<option>กลับบ้าน</option>
+</select>
+
+<h3>MENU</h3>
+
+<div class="menu">
+
+<button onclick="add('Coffee',50)">Coffee</button>
+<button onclick="add('Latte',60)">Latte</button>
+<button onclick="add('Cake',70)">Cake</button>
+
+</div>
+
+<div id="list" class="order"></div>
+
+<div id="total"></div>
+
+<button onclick="sendOrder()">
+ส่ง
 </button>
 
-<button onclick="login('Belial Blair')">
-Belial Blair
-</button>
+</div>
+
+</div>
+
+
+
+<!-- ================= HISTORY ================= -->
+
+<div id="history" class="page">
+
+<h2>ออเดอร์ที่ส่งแล้ว</h2>
+
+<div id="historyBox" class="history"></div>
 
 </div>
 
@@ -107,13 +241,138 @@ Belial Blair
 
 <script>
 
-function login(name){
+let staff = localStorage.getItem("staff")
+document.getElementById("staffName").innerText = staff
 
-localStorage.setItem("staff",name)
+let order={}
+let history = JSON.parse(localStorage.getItem("history")) || []
 
-window.location="pos.html"
+
+function showPage(p){
+
+document.querySelectorAll(".page")
+.forEach(e=>e.classList.remove("active"))
+
+document.getElementById(p)
+.classList.add("active")
+
+updateDashboard()
+showHistory()
 
 }
+
+
+function add(m,p){
+
+if(order[m]){
+
+order[m].qty++
+
+}else{
+
+order[m]={qty:1,price:p}
+
+}
+
+show()
+
+}
+
+
+function show(){
+
+let text=""
+let total=0
+
+for(let m in order){
+
+let q=order[m].qty
+let p=order[m].price
+
+text+=m+" x"+q+"\n"
+
+total+=q*p
+
+}
+
+document.getElementById("list").innerText=text
+document.getElementById("total").innerText="รวม "+total
+
+}
+
+
+function sendOrder(){
+
+let total=0
+let text=""
+
+for(let m in order){
+
+let q=order[m].qty
+let p=order[m].price
+
+text+=m+" x"+q+"\n"
+
+total+=q*p
+
+}
+
+history.push({
+text:text,
+total:total
+})
+
+localStorage.setItem(
+"history",
+JSON.stringify(history)
+)
+
+order={}
+
+show()
+
+updateDashboard()
+showHistory()
+
+}
+
+
+function showHistory(){
+
+let t=""
+
+history.forEach(h=>{
+
+t+=h.text+" = "+h.total+"<hr>"
+
+})
+
+document.getElementById("historyBox").innerHTML=t
+
+}
+
+
+function updateDashboard(){
+
+let money=0
+
+history.forEach(h=>{
+
+money+=h.total
+
+})
+
+document.getElementById("orderCount")
+.innerText=history.length
+
+document.getElementById("money")
+.innerText=money
+
+}
+
+
+updateDashboard()
+showHistory()
 
 </script>
 
