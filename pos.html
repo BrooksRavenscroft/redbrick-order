@@ -12,7 +12,7 @@ font-family:Segoe UI;
 background:#f5e6d8;
 }
 
-/* ---------- TOP ---------- */
+/* ===== top ===== */
 
 .topbar{
 background:#6b4b3a;
@@ -40,7 +40,7 @@ padding:6px 10px;
 cursor:pointer;
 }
 
-/* ---------- PAGE ---------- */
+/* ===== page ===== */
 
 .page{
 display:none;
@@ -51,33 +51,27 @@ padding:10px;
 display:block;
 }
 
-/* ---------- CENTER POS ---------- */
+/* ===== center ===== */
 
 .centerBox{
-
 max-width:900px;
 margin:auto;
 background:white;
 padding:15px;
 border-radius:12px;
-box-shadow:0 0 10px #0003;
-
 }
 
-/* ---------- INPUT ---------- */
+/* ===== input ===== */
 
 .bigInput{
-
 font-size:22px;
 padding:8px;
 margin:5px;
 border-radius:8px;
 width:95%;
-
 }
 
 .bigBtn{
-
 font-size:20px;
 padding:10px;
 margin:5px;
@@ -86,99 +80,90 @@ border-radius:10px;
 background:#cc7a00;
 color:white;
 cursor:pointer;
-
 }
 
-/* ---------- TABLE ---------- */
+.selected{
+background:#27ae60 !important;
+color:white;
+}
+
+/* ===== table ===== */
 
 #tableBox{
-
-display:grid;
+display:none;
 grid-template-columns:repeat(6,1fr);
 gap:5px;
 margin-top:10px;
-
 }
 
 .tableBtn{
-
 padding:6px;
 border:none;
 border-radius:8px;
 background:#bdc3c7;
 cursor:pointer;
-
 }
 
-.tableFree{
-
-background:#bdc3c7;
-
-}
-
-.tableUse{
-
+.tableSelect{
 background:#e67e22;
 color:white;
-
 }
 
 .tableBusy{
-
 background:#e74c3c;
 color:white;
-
 }
 
-/* ---------- MENU ---------- */
+/* ===== menu ===== */
 
 .menuGrid{
-
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:5px;
-margin-top:10px;
-
 }
 
 .menuBtn{
-
 font-size:18px;
 padding:8px;
 border:none;
 border-radius:10px;
 background:#ffe0c2;
 cursor:pointer;
-
 }
 
-/* ---------- ORDER ---------- */
+/* ===== order ===== */
 
 .order{
-
 background:#f2e2d2;
 padding:10px;
 margin-top:10px;
-
 }
 
-/* ---------- DASH ---------- */
+/* ===== receipt ===== */
+
+#receipt{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px;
+border-radius:12px;
+display:none;
+box-shadow:0 0 20px #0005;
+}
 
 .card{
-
 background:white;
 padding:15px;
 display:inline-block;
 margin:10px;
 border-radius:10px;
-
 }
 
 .big{
-
 font-size:25px;
 color:#cc7a00;
-
 }
 
 </style>
@@ -212,42 +197,36 @@ location.href="index.html"
 
 <button class="logout"
 onclick="logout()"
-title="Logout">
-⎋
-</button>
+title="Logout">⎋</button>
 
 </div>
 
 </div>
 
 
-<!-- ================= HOME ================= -->
+<!-- ===== HOME ===== -->
 
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
 
 <div class="card">
-ออเดอร์ค้าง
-<div id="count" class="big">0</div>
-</div>
-
-<div class="card">
-เงินวันนี้
+วันนี้ขายได้
 <div id="money" class="big">0</div>
 </div>
 
+<button onclick="resetDone()">
+ล้างย้อนหลัง
+</button>
+
 </div>
 
 
-
-<!-- ================= POS ================= -->
+<!-- ===== POS ===== -->
 
 <div id="pos" class="page">
 
 <div class="centerBox">
-
-<h2>POS</h2>
 
 <input id="customer"
 class="bigInput"
@@ -255,13 +234,15 @@ placeholder="ชื่อลูกค้า">
 
 <br>
 
-<button class="bigBtn"
-onclick="setType('eat')">
+<button id="eatBtn"
+class="bigBtn"
+onclick="setType('eat',this)">
 🍽 ทานที่ร้าน
 </button>
 
-<button class="bigBtn"
-onclick="setType('back')">
+<button id="backBtn"
+class="bigBtn"
+onclick="setType('back',this)">
 🥡 กลับบ้าน
 </button>
 
@@ -272,34 +253,22 @@ onclick="setType('back')">
 <div class="menuGrid">
 
 <button class="menuBtn"
-onclick="add('Coffee',50)">
-☕ Coffee
-</button>
+onclick="add('Coffee',50)">☕ Coffee</button>
 
 <button class="menuBtn"
-onclick="add('Latte',60)">
-🥛 Latte
-</button>
+onclick="add('Cake',70)">🍰 Cake</button>
 
 <button class="menuBtn"
-onclick="add('Cake',70)">
-🍰 Cake
-</button>
+onclick="add('Tea',40)">🍵 Tea</button>
 
 <button class="menuBtn"
-onclick="add('Tea',40)">
-🍵 Tea
-</button>
+onclick="add('Milk',30)">🥛 Milk</button>
 
 <button class="menuBtn"
-onclick="add('Milk',30)">
-🥛 Milk
-</button>
+onclick="add('Cookie',35)">🍪 Cookie</button>
 
 <button class="menuBtn"
-onclick="add('Cookie',35)">
-🍪 Cookie
-</button>
+onclick="add('Latte',60)">🥛 Latte</button>
 
 </div>
 
@@ -309,14 +278,10 @@ onclick="add('Cookie',35)">
 <div id="total"></div>
 
 <button class="bigBtn"
-onclick="sendOrder()">
-ส่งออเดอร์
-</button>
+onclick="sendOrder()">ส่งออเดอร์</button>
 
 <button class="bigBtn"
-onclick="cancelOrder()">
-ยกเลิก
-</button>
+onclick="cancelOrder()">ยกเลิก</button>
 
 </div>
 
@@ -324,52 +289,49 @@ onclick="cancelOrder()">
 
 
 
-<!-- ================= HISTORY ================= -->
+<!-- ===== HISTORY ===== -->
 
 <div id="history" class="page">
-
 <h2>ค้าง</h2>
-
 <div id="historyBox"></div>
-
 </div>
 
 
 
-<!-- ================= DONE ================= -->
+<!-- ===== DONE ===== -->
 
 <div id="done" class="page">
-
 <h2>ย้อนหลัง</h2>
-
 <div id="doneBox"></div>
-
 </div>
+
+
+
+<div id="receipt"></div>
 
 
 
 <script>
 
-
-document.getElementById("staff")
-.innerText=
+document.getElementById("staff").innerText=
 localStorage.getItem("staff")
-
 
 let order={}
 let history=
 JSON.parse(localStorage.getItem("history"))||[]
+
 let doneHistory=
 JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
 
+let today=new Date().toDateString()
 
 
-/* ---------- TABLE CREATE ---------- */
+/* ===== create table ===== */
 
-let tableBox=document.getElementById("tableBox")
+let tb=document.getElementById("tableBox")
 
 for(let i=1;i<=22;i++){
 
@@ -377,17 +339,16 @@ let b=document.createElement("button")
 
 b.innerText="โต๊ะ "+i
 
-b.className="tableBtn tableFree"
+b.className="tableBtn"
 
-b.onclick=()=>setTable(i,b)
+b.onclick=()=>selectTable(i,b)
 
-tableBox.appendChild(b)
+tb.appendChild(b)
 
 }
 
 
-
-/* ---------- PAGE ---------- */
+/* ===== page ===== */
 
 function page(p){
 
@@ -406,46 +367,53 @@ showDone()
 }
 
 
-
-/* ---------- LOGIN ---------- */
+/* ===== logout ===== */
 
 function logout(){
 
 localStorage.removeItem("staff")
-
 location.href="index.html"
 
 }
 
 
+/* ===== type ===== */
 
-/* ---------- TYPE ---------- */
-
-function setType(t){
+function setType(t,btn){
 
 type=t
+
+eatBtn.classList.remove("selected")
+backBtn.classList.remove("selected")
+
+btn.classList.add("selected")
+
+if(t=="eat"){
+tableBox.style.display="grid"
+}else{
+tableBox.style.display="none"
+table=""
+}
 
 }
 
 
+/* ===== table ===== */
 
-/* ---------- TABLE ---------- */
-
-function setTable(i,btn){
+function selectTable(i,btn){
 
 table="โต๊ะ "+i
 
 document
 .querySelectorAll(".tableBtn")
-.forEach(b=>b.classList.remove("tableUse"))
+.forEach(b=>b.classList.remove("tableSelect"))
 
-btn.classList.add("tableUse")
+btn.classList.add("tableSelect")
 
 }
 
 
-
-/* ---------- MENU ---------- */
+/* ===== menu ===== */
 
 function add(m,p){
 
@@ -453,6 +421,18 @@ if(order[m]){
 order[m].qty++
 }else{
 order[m]={qty:1,price:p}
+}
+
+show()
+
+}
+
+function minus(m){
+
+order[m].qty--
+
+if(order[m].qty<=0){
+delete order[m]
 }
 
 show()
@@ -469,59 +449,52 @@ for(let m in order){
 
 let q=order[m].qty
 
-text+=m+" x"+q+"<br>"
+text+=
+m+" x"+q+
+` <button onclick="minus('${m}')">-</button><br>`
 
 total+=q*order[m].price
 
 }
 
 list.innerHTML=text
-
 totalDiv.innerText="รวม "+total
 
 }
 
 
-
-/* ---------- CANCEL ---------- */
+/* ===== cancel ===== */
 
 function cancelOrder(){
-
 order={}
 show()
-
 }
 
 
-
-/* ---------- SEND ---------- */
+/* ===== send ===== */
 
 function sendOrder(){
 
 let total=0
 
 for(let m in order){
-
-total+=
-order[m].qty*
-order[m].price
-
+total+=order[m].qty*order[m].price
 }
 
-history.push({
-
-text:
-document.getElementById("customer").value+
-" "+table,
-
+let data={
+date:today,
+text:customer.value+" "+table,
 total:total
+}
 
-})
+history.push(data)
 
 localStorage.setItem(
 "history",
 JSON.stringify(history)
 )
+
+receipt(data)
 
 order={}
 show()
@@ -531,8 +504,28 @@ updateDash()
 }
 
 
+/* ===== receipt ===== */
 
-/* ---------- HISTORY ---------- */
+function receipt(d){
+
+receiptBox.innerHTML=
+`
+<h3>☕ Cafe</h3>
+${d.text}
+<br>
+รวม ${d.total}
+`
+
+receiptBox.style.display="block"
+
+setTimeout(()=>{
+receiptBox.style.display="none"
+},3000)
+
+}
+
+
+/* ===== history ===== */
 
 function finish(i){
 
@@ -540,12 +533,10 @@ doneHistory.push(history[i])
 
 history.splice(i,1)
 
-localStorage.setItem(
-"history",
+localStorage.setItem("history",
 JSON.stringify(history))
 
-localStorage.setItem(
-"done",
+localStorage.setItem("done",
 JSON.stringify(doneHistory))
 
 showHistory()
@@ -572,14 +563,17 @@ historyBox.innerHTML=t
 }
 
 
-
 function showDone(){
 
 let t=""
 
 doneHistory.forEach(h=>{
 
-t+=h.text+"<hr>"
+t+=
+h.date+
+" "+h.text+
+" "+h.total+
+"<hr>"
 
 })
 
@@ -588,19 +582,35 @@ doneBox.innerHTML=t
 }
 
 
-
-/* ---------- DASH ---------- */
+/* ===== dash ===== */
 
 function updateDash(){
 
-let money=0
+let sum=0
 
 doneHistory.forEach(h=>{
-money+=h.total
+
+if(h.date==today){
+sum+=h.total
+}
+
 })
 
-count.innerText=history.length
-money.innerText=money
+money.innerText=sum
+
+}
+
+
+function resetDone(){
+
+doneHistory=[]
+
+localStorage.setItem(
+"done","[]"
+)
+
+showDone()
+updateDash()
 
 }
 
