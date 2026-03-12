@@ -142,7 +142,7 @@ padding:20px;
 border-radius:12px;
 display:none;
 box-shadow:0 0 20px #0005;
-width:320px;
+width:300px;
 }
 
 </style>
@@ -317,48 +317,7 @@ total+=price
 }
 
 list.innerHTML=text
-totalBox.innerText="รวม "+total+" บาท"
-
-}
-
-
-
-function sendOrder(){
-
-let total=0
-
-for(let m in order){
-total+=order[m].qty*order[m].price
-}
-
-let now=new Date()
-
-let data={
-
-name:customer.value,
-table:table,
-items:JSON.stringify(order),
-total:total,
-
-dateKey:now.toDateString(),
-date:now.toLocaleDateString(),
-time:now.toLocaleTimeString()
-
-}
-
-history.push(data)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-showReceipt(data)
-
-order={}
-show()
-
-updateDash()
+total.innerText="รวม "+total+" บาท"
 
 }
 
@@ -389,40 +348,5 @@ items+
 "<br><br><button onclick='receipt.style.display=\"none\"'>ปิด</button>"
 
 receipt.style.display="block"
-
-}
-
-
-
-function showHistory(){
-
-let t=""
-
-history.forEach((h,i)=>{
-
-let obj=JSON.parse(h.items)
-
-let items=""
-
-for(let m in obj){
-
-items+=
-m+" x"+obj[m].qty+
-" = "+
-(obj[m].qty*obj[m].price)+"<br>"
-
-}
-
-t+=
-h.name+" "+h.table+
-"<br>"+h.date+
-"<br>"+h.time+
-"<br>"+items+
-"<b>รวม "+h.total+"</b>"+
-`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
-
-})
-
-historyBox.innerHTML=t
 
 }
