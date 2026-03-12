@@ -6,102 +6,285 @@
 
 <style>
 
+body{
+margin:0;
+font-family:Segoe UI;
+background:#f5e6d8;
+}
+
+.topbar{
+background:#6b4b3a;
+color:white;
+display:flex;
+justify-content:space-between;
+padding:10px;
+}
+
+.menuTop button{
+margin:2px;
+padding:6px 10px;
+border:none;
+border-radius:8px;
+background:#d9a066;
+cursor:pointer;
+}
+
+.logout{
+background:#c0392b;
+color:white;
+border:none;
+border-radius:8px;
+padding:6px 10px;
+cursor:pointer;
+}
+
+.page{display:none;padding:10px;}
+.active{display:block;}
+
+.centerBox{
+max-width:1000px;
+margin:auto;
+background:white;
+padding:15px;
+border-radius:12px;
+}
+
+.bigInput{
+font-size:22px;
+padding:8px;
+margin:5px;
+border-radius:8px;
+width:95%;
+}
+
+.bigBtn{
+font-size:20px;
+padding:10px;
+margin:5px;
+border:none;
+border-radius:10px;
+background:#cc7a00;
+color:white;
+cursor:pointer;
+}
+
+.selected{
+background:#27ae60!important;
+}
+
+.posGrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+#tableBox{
+display:none;
+grid-template-columns:repeat(6,1fr);
+gap:5px;
+margin-bottom:10px;
+}
+
+.tableBtn{
+padding:6px;
+border:none;
+border-radius:8px;
+background:#bdc3c7;
+cursor:pointer;
+}
+
+.tableSelect{
+background:#e67e22;
+color:white;
+}
+
+.menuGrid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:5px;
+}
+
+.menuBtn{
+font-size:18px;
+padding:8px;
+border:none;
+border-radius:10px;
+background:#ffe0c2;
+cursor:pointer;
+}
+
+.order{
+background:#f2e2d2;
+padding:10px;
+margin-top:10px;
+}
+
+.card{
+background:white;
+padding:15px;
+display:inline-block;
+margin:10px;
+border-radius:10px;
+}
+
+.big{
+font-size:25px;
+color:#cc7a00;
+}
+
+#receipt{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+padding:20px;
+border-radius:12px;
+display:none;
+box-shadow:0 0 20px #0005;
+width:300px;
+}
+
+</style>
+</head>
+<body>
+
+<script>
+if(!localStorage.getItem("staff")){
+location.href="index.html"
+}
+</script>
+
+
+<div class="topbar">
+
+<div class="menuTop">
+<button onclick="page('home')">หน้าแรก</button>
+<button onclick="page('pos')">POS</button>
+<button onclick="page('history')">ค้าง</button>
+<button onclick="page('done')">ย้อนหลัง</button>
+</div>
+
+<div>
+<span id="staff"></span>
+<button class="logout" onclick="logout()">⎋</button>
+</div>
+
+</div>
+
+
+
+<div id="home" class="page active">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+วันนี้ขายได้
+<div id="money" class="big">0</div>
+</div>
+
+<br>
+
+<button class="bigBtn" onclick="clearToday()">
+ล้างข้อมูลวันนี้
+</button>
+
+</div>
+
+
+
+<div id="pos" class="page">
+
+<div class="centerBox">
+
+<input id="customer" class="bigInput" placeholder="ชื่อลูกค้า">
+
+<br>
+
+<button id="eatBtn" class="bigBtn"
+onclick="setType('eat',this)">
+🍽 ทานที่ร้าน
+</button>
+
+<button id="backBtn" class="bigBtn"
+onclick="setType('back',this)">
+🥡 กลับบ้าน
+</button>
+
+<div class="posGrid">
+
+<div>
+
+<div id="tableBox"></div>
+
+<div class="menuGrid">
+
+<button class="menuBtn" onclick="add('Coffee',50)">☕ Coffee</button>
+<button class="menuBtn" onclick="add('Cake',70)">🍰 Cake</button>
+<button class="menuBtn" onclick="add('Tea',40)">🍵 Tea</button>
+<button class="menuBtn" onclick="add('Milk',30)">🥛 Milk</button>
+<button class="menuBtn" onclick="add('Cookie',35)">🍪 Cookie</button>
+<button class="menuBtn" onclick="add('Latte',60)">🥛 Latte</button>
+
+</div>
+
+</div>
+
+
+<div>
+
+<div id="list" class="order"></div>
+<div id="total" class="big"></div>
+
+<button class="bigBtn" onclick="sendOrder()">ส่งออเดอร์</button>
+<button class="bigBtn" onclick="cancelOrder()">ยกเลิก</button>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+
+<div id="history" class="page">
+<h2>ค้าง</h2>
+<div id="historyBox"></div>
+</div>
+
+
+
+<div id="done" class="page">
+<h2>ย้อนหลัง</h2>
+<div id="doneBox"></div>
+</div>
+
+
+<div id="receipt"></div>
+
+
+
 <script>
 
 document.getElementById("staff").innerText =
 localStorage.getItem("staff")
 
-let admin = localStorage.getItem("staff") === "admin"
-
 let order={}
 let history=JSON.parse(localStorage.getItem("history"))||[]
 let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
-
-let menuList = JSON.parse(localStorage.getItem("menu")) || [
-{name:"Coffee",price:50},
-{name:"Cake",price:70},
-{name:"Tea",price:40},
-{name:"Milk",price:30},
-{name:"Cookie",price:35},
-{name:"Latte",price:60}
-]
 
 let table=""
 let type=""
 let today=new Date().toLocaleDateString()
 
 
-// ===== render menu =====
-
-function renderMenu(){
-
-let box=document.querySelector(".menuGrid")
-if(!box)return
-
-box.innerHTML=""
-
-menuList.forEach(m=>{
-
-let b=document.createElement("button")
-
-b.className="menuBtn"
-b.innerText=m.name+" "+m.price
-
-b.onclick=()=>add(m.name,m.price)
-
-box.appendChild(b)
-
-})
-
-if(admin){
-
-let addBtn=document.createElement("button")
-
-addBtn.className="menuBtn"
-addBtn.innerText="➕ เพิ่มเมนู"
-
-addBtn.onclick=addMenu
-
-box.appendChild(addBtn)
-
-}
-
-}
-
-
-// ===== เพิ่มเมนู =====
-
-function addMenu(){
-
-let name=prompt("ชื่อเมนู")
-if(!name)return
-
-let price=Number(prompt("ราคา"))
-if(!price)return
-
-menuList.push({
-name:name,
-price:price
-})
-
-localStorage.setItem(
-"menu",
-JSON.stringify(menuList)
-)
-
-renderMenu()
-
-}
-
-
-// ===== table =====
 
 let tb=document.getElementById("tableBox")
 
 for(let i=1;i<=22;i++){
 
 let b=document.createElement("button")
-
 b.innerText="โต๊ะ "+i
 b.className="tableBtn"
 
@@ -112,7 +295,6 @@ tb.appendChild(b)
 }
 
 
-// ===== page =====
 
 function page(p){
 
@@ -129,7 +311,6 @@ showDone()
 }
 
 
-// ===== logout =====
 
 function logout(){
 
@@ -139,7 +320,6 @@ location.href="index.html"
 }
 
 
-// ===== type =====
 
 function setType(t,btn){
 
@@ -160,18 +340,15 @@ table=""
 }
 
 
-// ===== table select =====
 
 function selectTable(i,btn){
 
 let t="โต๊ะ "+i
 
 if(table==t){
-
 table=""
 btn.classList.remove("tableSelect")
 return
-
 }
 
 table=t
@@ -184,7 +361,6 @@ btn.classList.add("tableSelect")
 }
 
 
-// ===== add =====
 
 function add(m,p){
 
@@ -199,7 +375,6 @@ show()
 }
 
 
-// ===== minus =====
 
 function minus(m){
 
@@ -214,7 +389,6 @@ show()
 }
 
 
-// ===== show =====
 
 function show(){
 
@@ -243,7 +417,6 @@ document.getElementById("total").innerText=
 }
 
 
-// ===== send =====
 
 function sendOrder(){
 
@@ -273,165 +446,16 @@ localStorage.setItem(
 JSON.stringify(history)
 )
 
+showReceipt(data)
+
 order={}
 show()
 
-showHistory()
-
-}
-
-
-// ===== history =====
-
-function showHistory(){
-
-let t=""
-
-history.forEach((h,i)=>{
-
-let obj=JSON.parse(h.items)
-
-let items=""
-
-for(let m in obj){
-
-items+=
-m+" x"+obj[m].qty+
-" = "+
-(obj[m].qty*obj[m].price)+"<br>"
-
-}
-
-t+=
-
-"<div class='order'>"+
-"<b>"+h.name+" "+h.table+"</b><br>"+
-h.date+" "+h.time+
-"<hr>"+
-items+
-"<hr>"+
-"<b>รวม "+h.total+" บาท</b><br>"+
-`<button onclick="finish(${i})">เสร็จ</button>`+
-
-(admin
-?`<button onclick="delHistory(${i})">ลบ</button>`
-:"")
-
-+
-"</div>"
-
-})
-
-historyBox.innerHTML=t
-
-}
-
-
-function delHistory(i){
-
-if(!admin)return
-
-history.splice(i,1)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-showHistory()
-
-}
-
-
-// ===== done =====
-
-function showDone(){
-
-let t=""
-
-doneHistory.forEach((h,i)=>{
-
-t+=
-h.name+" "+h.table+
-"<br>"+h.date+
-"<br>"+h.time+
-"<br>รวม "+h.total+
-(admin
-?` <button onclick="delDone(${i})">ลบ</button>`
-:"")
-+
-"<hr>"
-
-})
-
-doneBox.innerHTML=t
-
-}
-
-
-function delDone(i){
-
-if(!admin)return
-
-doneHistory.splice(i,1)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-showDone()
-
-}
-
-
-// ===== finish =====
-
-function finish(i){
-
-doneHistory.push(history[i])
-history.splice(i,1)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-showHistory()
-showDone()
 updateDash()
 
 }
 
 
-// ===== dash =====
-
-function updateDash(){
-
-let sum=0
-
-doneHistory.forEach(h=>{
-if(h.date===today){
-sum+=h.total
-}
-})
-
-money.innerText=sum
-
-}
-
-
-renderMenu()
-updateDash()
-showHistory()
-showDone()
-
-//// ===== RECEIPT POPUP =====
 
 function showReceipt(d){
 
@@ -468,54 +492,86 @@ receipt.style.display="none"
 
 
 
-//// ===== sendOrder upgrade =====
+function finish(i){
 
-let oldSend = sendOrder
-
-sendOrder = function(){
-
-let total=0
-
-for(let m in order){
-total+=order[m].qty*order[m].price
-}
-
-let now=new Date()
-
-let data={
-
-name:customer.value,
-table:table,
-items:JSON.stringify(order),
-total:total,
-date:now.toLocaleDateString(),
-time:now.toLocaleTimeString()
-
-}
-
-history.push(data)
+doneHistory.push(history[i])
+history.splice(i,1)
 
 localStorage.setItem(
 "history",
 JSON.stringify(history)
 )
 
-showReceipt(data)
-
-order={}
-show()
+localStorage.setItem(
+"done",
+JSON.stringify(doneHistory)
+)
 
 showHistory()
+showDone()
+updateDash()
 
 }
 
 
 
-//// ===== ADMIN CLEAR TODAY =====
+function showHistory(){
+
+let t=""
+
+history.forEach((h,i)=>{
+
+let obj=JSON.parse(h.items)
+
+let items=""
+
+for(let m in obj){
+
+items+=
+m+" x"+obj[m].qty+
+" = "+
+(obj[m].qty*obj[m].price)+"<br>"
+
+}
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>"+items+
+"<b>รวม "+h.total+"</b>"+
+`<br><button onclick="finish(${i})">เสร็จ</button><hr>`
+
+})
+
+historyBox.innerHTML=t
+
+}
+
+
+
+function showDone(){
+
+let t=""
+
+doneHistory.forEach(h=>{
+
+t+=
+h.name+" "+h.table+
+"<br>"+h.date+
+"<br>"+h.time+
+"<br>รวม "+h.total+
+"<hr>"
+
+})
+
+doneBox.innerHTML=t
+
+}
+
+
 
 function clearToday(){
-
-if(!admin)return
 
 doneHistory=
 doneHistory.filter(h=>h.date!==today)
@@ -532,44 +588,25 @@ showDone()
 
 
 
-//// ===== ADMIN RESET ALL =====
+function updateDash(){
 
-function resetAll(){
+let sum=0
 
-if(!admin)return
+doneHistory.forEach(h=>{
+if(h.date===today){
+sum+=h.total
+}
+})
 
-if(!confirm("ล้างทั้งหมด ?"))return
+money.innerText=sum
 
-history=[]
-doneHistory=[]
-menuList=[]
+}
 
-localStorage.clear()
 
-renderMenu()
+updateDash()
 showHistory()
 showDone()
-updateDash()
 
-}
-
-
-
-//// ===== ADMIN BUTTON =====
-
-if(admin){
-
-let btn=document.createElement("button")
-
-btn.innerText="RESET"
-btn.className="bigBtn"
-btn.onclick=resetAll
-
-document.getElementById("home")
-.appendChild(btn)
-
-}
-  
 </script>
 
 </body>
