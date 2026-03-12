@@ -208,6 +208,18 @@ font-family:monospace;
 }
 
 </style>
+.logoBox{
+
+text-align:center;
+margin-top:10px;
+
+}
+
+.logo{
+
+width:120px;
+
+}
 
 </head>
 <body>
@@ -215,7 +227,11 @@ font-family:monospace;
 
 
 <div class="top">
+<div class="logoBox">
 
+<img src="logo.png" class="logo">
+
+</div>
 <div class="menu">
 
 <button onclick="page('home')">หน้าแรก</button>
@@ -232,7 +248,11 @@ font-family:monospace;
 
 
 <!-- HOME -->
+<center>
 
+<img src="logo.png" class="logo">
+
+</center>
 <div id="home" class="page active">
 
 <div class="card">
@@ -609,16 +629,27 @@ let r=document.getElementById("receipt")
 
 r.style.display="block"
 
-r.innerText=t
+r.innerHTML=`
+
+<img src="logo.png" style="width:100px">
+
+<hr>
+
+${t}
+
+<hr>
+
+Redbrick Coffee Shop
+
+`
 
 setTimeout(()=>{
 
 r.style.display="none"
 
-},3000)
+},4000)
 
 }
-
 
 
 function discord(msg){
