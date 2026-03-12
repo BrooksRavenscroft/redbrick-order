@@ -173,31 +173,18 @@ location.href="index.html"
 </div>
 
 
-<!-- HOME -->
-
 <div id="home" class="page active">
 
 <h2>Dashboard</h2>
 
 <div class="card">
-
 วันนี้ขายได้
-
 <div id="money" class="big">0</div>
-
-<br>
-
-<button class="bigBtn"
-onclick="clearToday()">
-ล้างข้อมูลวันนี้
-</button>
-
 </div>
 
 </div>
 
 
-<!-- POS -->
 
 <div id="pos" class="page">
 
@@ -266,7 +253,6 @@ onclick="cancelOrder()">
 </div>
 
 
-<!-- HISTORY -->
 
 <div id="history" class="page">
 <h2>ค้าง</h2>
@@ -274,7 +260,6 @@ onclick="cancelOrder()">
 </div>
 
 
-<!-- DONE -->
 
 <div id="done" class="page">
 <h2>ย้อนหลัง</h2>
@@ -285,17 +270,15 @@ onclick="cancelOrder()">
 <div id="receipt"></div>
 
 
+
 <script>
 
 document.getElementById("staff").innerText=
 localStorage.getItem("staff")
 
 let order={}
-let history=
-JSON.parse(localStorage.getItem("history"))||[]
-
-let doneHistory=
-JSON.parse(localStorage.getItem("done"))||[]
+let history=JSON.parse(localStorage.getItem("history"))||[]
+let doneHistory=JSON.parse(localStorage.getItem("done"))||[]
 
 let table=""
 let type=""
@@ -366,11 +349,23 @@ table=""
 }
 
 
-/* table */
+/* table toggle */
 
 function selectTable(i,btn){
 
-table="โต๊ะ "+i
+let t="โต๊ะ "+i
+
+if(table==t){
+
+table=""
+
+btn.classList.remove("tableSelect")
+
+return
+
+}
+
+table=t
 
 document
 .querySelectorAll(".tableBtn")
@@ -429,8 +424,7 @@ total+=price
 }
 
 list.innerHTML=text
-document.getElementById("total").innerText=
-"รวม "+total+" บาท"
+totalDiv.innerText="รวม "+total+" บาท"
 
 }
 
@@ -445,12 +439,15 @@ for(let m in order){
 total+=order[m].qty*order[m].price
 }
 
+let time=new Date().toLocaleTimeString()
+
 let data={
 name:customer.value,
 table:table,
 items:JSON.stringify(order),
 total:total,
-date:today
+date:today,
+time:time
 }
 
 history.push(data)
@@ -491,6 +488,7 @@ receipt.innerHTML=
 
 "<h3>☕ Receipt</h3>"+
 d.name+" "+d.table+
+"<br>"+d.time+
 "<br><br>"+
 items+
 "<hr>"+
@@ -547,6 +545,7 @@ m+" x"+obj[m].qty+
 
 t+=
 h.name+" "+h.table+
+"<br>"+h.time+
 "<br>"+
 items+
 "<b>รวม "+h.total+"</b>"+
@@ -564,7 +563,7 @@ function showDone(){
 let t=""
 
 doneHistory.forEach(h=>{
-t+=h.name+" "+h.total+"<hr>"
+t+=h.name+" "+h.total+" "+h.time+"<hr>"
 })
 
 doneBox.innerHTML=t
@@ -583,33 +582,6 @@ sum+=h.total
 })
 
 money.innerText=sum
-
-}
-
-
-function clearToday(){
-
-if(!confirm("ล้างข้อมูลวันนี้?")) return
-
-doneHistory =
-doneHistory.filter(h=>h.date!=today)
-
-history =
-history.filter(h=>h.date!=today)
-
-localStorage.setItem(
-"history",
-JSON.stringify(history)
-)
-
-localStorage.setItem(
-"done",
-JSON.stringify(doneHistory)
-)
-
-updateDash()
-showHistory()
-showDone()
 
 }
 
